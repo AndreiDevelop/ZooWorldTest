@@ -1,6 +1,6 @@
 # ZooWorld implementation plan
 
-Status: iterations 0-1 complete; iteration 2 pending. Owner: Andrii Maksymov. Updated: 2026-11-02.
+Status: iterations 0-2 complete; iteration 3 pending. Owner: Andrii Maksymov. Updated: 2026-11-02.
 Scope: [GDD](../GDD/GDD.md) and the agreed
 [system architecture](CODE_STYLE_AND_ARCHITECTURE.md#zooworld-system-architecture).
 
@@ -15,14 +15,14 @@ failed acceptance checks consume the reserve and require replanning, rather than
 | --- | --- | --- | --- |
 | 0. Empty project | Already completed | Verified | Unity 6.3 URP baseline published at `4b213e8` |
 | 1. Composition and animal data | 20 min | Verified locally | Scene readiness, injected state and validated species definitions |
-| 2. Pool, spawn and movement | 30 min | Pending | Reused frogs/snakes moving and returning to view |
+| 2. Pool, spawn and movement | 30 min | Verified locally | Reused frogs/snakes moving and returning to view |
 | 3. Food-chain resolution | 20 min | Pending | Size-based predator outcome, one death/event per lifetime |
 | 4. HUD and feedback | 15 min | Pending | Additive uGUI counters and pooled `Tasty!` |
 | 5. Verification and handoff | 20 min | Pending | Checked requirements, extension example and accurate documentation |
 | Reserve | 15 min | Unallocated | Integration fixes and delivery |
 
 Iterations are sequential acceptance gates. Do not report an iteration complete because its
-time allocation expired. Iteration 1 was requested by the owner; later iterations require their own start request.
+time allocation expired. Iterations 1-2 were requested by the owner; later iterations require their own start request.
 
 ## Iteration 0 - verified baseline
 
@@ -59,6 +59,11 @@ See [iteration 1 validation](Reports/2026-11-02-iteration-one-validation.md).
 Exit gate: Play Mode frames advance; both species move correctly, leave/return at varied
 aspect ratios and reuse views without stale velocity, scale, timers, subscriptions or visual offsets.
 Use focused movement and pool-lifetime tests; do not merely compare configuration getters.
+
+Result: 20 EditMode and 16 PlayMode cases passed, including real physics rebound, movement
+distance/speed, 12 reuse cycles, stale release requests, spawn cadence and camera aspect changes.
+Both species were observed moving in the normal Intro/Main/HUD startup, with no current
+Console errors or warnings during the capture. See [iteration 2 validation](Reports/2026-11-02-iteration-two-validation.md).
 
 ## Iteration 3 - food chain
 
@@ -102,6 +107,8 @@ No local/CI player build is part of verification without an explicit build reque
 Ignored local drafts are optional references, not integrated code. Before reuse, review them
 against the current specifications: they lack icon/Omnivore/size support, select predator ties
 by ID alone and have no animal pool. Their test results are not Unity-verified results.
+Iteration 2 adapted and verified the movement implementations/tests individually; it did not
+import the obsolete draft domain, predation or UI code wholesale.
 
 Keep production artwork, menus, economy, saves, backend, ECS, CrazyGames and CI outside these
 iterations. Pooling and the agreed architecture remain required even if the budget becomes tight.

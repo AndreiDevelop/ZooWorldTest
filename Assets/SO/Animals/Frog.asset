@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dcb00d8a7b394ba5a27705af451153a, type: 3}
+  m_Name: Frog
+  m_EditorClassIdentifier: ZooWorld.Runtime::ZooWorld.Animals.Content.AnimalDefinitionSO
+  _id: frog
+  _displayName: Frog
+  _icon: {fileID: 3543316485252179716, guid: b2d16d8b4a5b646daad3be0155c4a405, type: 3}
+  _role: 0
+  _sizeRange: {x: 0.8, y: 1.2}
+  _movement: {fileID: 11400000, guid: aa306f03305944b47a8d82f98513e63c, type: 2}
+  _prefab: {fileID: 2005740322993393911, guid: 4a6faea0cab5647caa859e8631612f5b, type: 3}

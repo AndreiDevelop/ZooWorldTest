@@ -62,7 +62,7 @@ namespace ZooWorld.Infrastructure
                 }
 
                 _sessionContainer.BindInstance(main.WorldCamera);
-                _mainScope.Container.Bind<AnimalLifetimeFactory>().AsSingle();
+                MainSceneInstaller.Install(_mainScope.Container, main);
                 _mainScope.InjectHierarchy();
                 Session.MarkMainReady();
 

@@ -2,15 +2,20 @@
 
 Status: agreed core; numeric tuning TBD. Priority: Essential.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
-Main GDD: [ZooWorld GDD](GDD.md). Implementation: pending.
+Main GDD: [ZooWorld GDD](GDD.md). Implementation: verified in iteration 2;
+automatic food-chain deaths remain iteration 3 work.
 
 ## Spawning and direction
 
 During a ready session, one animal appears every 1-2 seconds and starts moving randomly.
 Initial population, first-spawn timing, species distribution, spawn clearance and turn
-cadence are not specified. Proposed default behavior: begin with an empty world and spawn
-the first animal after the first interval; tune the remaining values in SO assets.
+cadence are not specified by the assignment. Current implementation begins with an empty world,
+spawns the first animal after the first interval and samples both species uniformly. All tuning is in SO assets.
 Do not silently add an active-population limit or spawn a large initial batch.
+
+The scheduler emits at most one animal per Update and schedules the next 1-2 second interval
+after that spawn; a long frame does not trigger a catch-up burst. Spawn placement tries eight
+positions with size-aware clearance, then allows physics to resolve overlap rather than dropping a spawn.
 
 The camera's visible ground area determines return behavior. Leaving it changes the
 animal's movement direction back toward the screen, rather than teleporting it or killing it.
@@ -27,8 +32,10 @@ camera area for an animal to return. Spawn inside a valid visible location.
 The animal Rigidbody/collider stays on the ground plane. A child visual follows a jump arc;
 the arc does not remove the frog from contact with predators. Physics uses FixedUpdate timing.
 Collision-free movement meets the configured distance/speed; collisions may change actual
-displacement. Movement must preserve visible collision recoil rather than immediately
-overwriting every impulse. Turn and recoil-recovery settings are SO-authored tuning.
+displacement. Movement preserves visible collision recoil rather than immediately
+overwriting every impulse. A frog finishes its current jump before adopting a changed direction.
+Current tuning is jump interval 1.2 s, duration 0.45 s, distance 1.8 units, height 0.7 units;
+snake speed 2 units/s, turn interval 1.5-3.5 s and recoil recovery 4 units/s squared.
 
 ## Animal reuse
 
@@ -38,8 +45,10 @@ Death disables the victim's participation immediately and returns its view once.
 
 Before reuse, reset linear/angular velocity, visual jump offset, timers, subscriptions,
 references and feedback ownership. Previous-lifetime collision or animation callbacks cannot
-affect the next occupant. Pool sizing/prewarm values are TBD; the technical proposal is
-lazy growth with no active-animal cap and a configured inactive retention limit.
+affect the next occupant. Pools grow lazily, retain at most 16 inactive views per prefab and
+destroy inactive overflow. There is no prewarming or active-animal cap. Runtime return is deferred
+until the next physics tick; contact participation stops immediately. Reuse resets the Rigidbody
+after activation while contacts remain disabled, because inactive Unity bodies can retain velocity.
 
 ## Acceptance criteria
 

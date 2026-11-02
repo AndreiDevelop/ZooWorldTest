@@ -39,7 +39,7 @@ These are mandatory user-established conventions, not claims that packages, scen
 
 ## ZooWorld system architecture
 
-Status: iteration 1 composition/data implemented and tested; simulation systems pending. Owner: Andrii Maksymov.
+Status: iterations 1-2 implemented and tested; predation and visible HUD pending. Owner: Andrii Maksymov.
 Updated: 2026-11-02. Gameplay authority: [GDD](../GDD/GDD.md).
 Execution order: [implementation plan](implementation-plan.md).
 
@@ -57,9 +57,20 @@ The historical baseline `4b213e8` is the empty Unity 6000.3.26f1 URP project des
 - `SessionInstaller` binds one session, statistics model and identity sequence. `SceneScope`
   creates Main/HUD child containers; the shared session becomes Ready only after both roots validate injection.
 - `AnimalLifetimeFactory` injects a fresh AnimalModel into AnimalController and an inactive AnimalView.
-  This is a lifetime-composition seam, not a pool or a spawner. AnimalView presents size/death state.
+  AnimalView presents size/death state. `AnimalModel.Retire()` invalidates a released lifetime without
+  recording a death; controllers and stale callbacks cannot act on that model again.
 - `AnimalDefinitionSO` validates metadata/references/ranges; `MovementSO`/`IMovement` define the variation boundary.
-  Concrete movement, animal content assets/prefabs, pooling, predation and visible HUD remain pending.
+  Frog/Snake assets and prefab variants, LinearMovement and JumpMovement are implemented.
+- `MainSceneInstaller` binds SimulationSO, WorldBounds, AnimalPool and SimulationController in the Main scope.
+  MainSceneController drives one Update/FixedUpdate loop after shared readiness. SimulationController
+  owns the spawn schedule and stops/disposes its pool on session stop/failure.
+- AnimalPool uses prefab-keyed inactive stacks and active lifetime leases. It expands lazily and retains
+  the configured inactive capacity. RequestRelease disables contact participation and retires the model;
+  storage/reuse occurs on a subsequent physics tick, after current contact callbacks have completed.
+- Linear/jump motors preserve physical recoil and recover toward commanded motion. Grounded Rigidbody
+  bodies use sphere colliders; the visual child follows a world-height jump arc. WorldBounds refreshes
+  from the camera projection/transform and accounts for collision radius when returning animals.
+- PredationService, death-counter UI and eating feedback remain pending iterations 3-4.
 
 Normal shutdown, cancellation during load and unexpected HUD unload are covered by PlayMode tests.
 An outstanding Unity scene load is allowed to finish and its scene is unloaded before cancellation completes.
@@ -121,8 +132,8 @@ Arrows show composition/data flow, not permission for domain services to referen
 1. Intro validates configuration, installs the session model/services and begins a cancellable load sequence.
 2. Load Main and bind its explicit camera/world references and scene-local factory/pools.
 3. Load HUD additively and inject its dependencies from the shared session scope.
-4. Signal readiness after both roots validate injected models. Later iterations add initial counter
-   rendering and start the spawn schedule/gameplay ticks only after this readiness gate.
+4. Signal readiness after both roots validate injected models. The spawn schedule and gameplay
+   ticks run only after this gate. Initial counter rendering is added in iteration 4.
 5. On shutdown, stop spawn/tick producers, invalidate the session, cancel loads/feedback, disable
    contacts and release active animals, then dispose scene-local subscriptions/pools and unload scenes.
 
@@ -160,11 +171,12 @@ The UI observes committed outcomes and never increments authoritative totals its
 
 Animal pooling is required by the owner, independently of the general profiling guidance below.
 Partition pools by prefab; prefab variants share a base composition but retain meaningful specialization.
-Proposed policy: lazy expansion, configured inactive retention and destruction of inactive overflow;
-do not add an active population cap or broad prewarming without a decision.
+Implemented policy: lazy expansion, configured inactive retention and destruction of inactive overflow;
+there is no active population cap or prewarming. These values live in SimulationSO.
 
 An inactive view is acquired, assigned a fresh lifetime ID/model/controller/movement state and size,
-injected, positioned and reset before activation. On release, disable contact/ticking, unsubscribe
+injected and positioned with contact disabled. Unity can preserve velocity on inactive bodies, so
+activation is followed by a final velocity reset before enabling contacts. On release, disable contact/ticking, unsubscribe
 and cancel owned work, clear references, reset Rigidbody velocities, scale and jump pose, and return
 the view once. Scene unload may destroy the pool; teardown releases do not count as food-chain deaths.
 
@@ -188,6 +200,8 @@ or benchmark for 1,000 simultaneous bodies. The iteration plan records acceptanc
 Change history: 2026-11-02 - captured the current bootstrap and agreed composition, size-based
 predation, visual jump and pooling decisions. Iteration 1 subsequently implemented scene/session
 composition and data validation; uniform size/no growth/lower-ID ties were approved by the owner.
+Iteration 2 implemented prefab pools, spawning, independent movement motors and camera return;
+36 EditMode/PlayMode cases passed. See the [iteration 2 report](Reports/2026-11-02-iteration-two-validation.md).
 
 ## Code style
 

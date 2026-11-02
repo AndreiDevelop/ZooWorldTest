@@ -39,10 +39,16 @@ namespace ZooWorld.Domain.Animals
         public TrophicRole Role { get; }
         public float CurrentSize { get; }
         public bool IsAlive { get; private set; } = true;
+        public bool IsActive { get; private set; } = true;
+
+        public void Retire()
+        {
+            IsActive = false;
+        }
 
         public bool TryDie()
         {
-            if (!IsAlive)
+            if (!IsAlive || !IsActive)
             {
                 return false;
             }

@@ -1,5 +1,5 @@
 {
     "name": "ZooWorld.PlayMode.Tests",
-    "references": ["ZooWorld.Domain", "ZooWorld.Runtime"],
+    "references": ["ZooWorld.Domain", "ZooWorld.Runtime", "Zenject"],
     "optionalUnityReferences": ["TestAssemblies"]
 }

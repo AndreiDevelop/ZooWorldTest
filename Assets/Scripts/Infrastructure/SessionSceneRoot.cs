@@ -25,7 +25,7 @@ namespace ZooWorld.Infrastructure
             }
         }
 
-        public void Release()
+        public virtual void Release()
         {
             Session = null;
             Statistics = null;

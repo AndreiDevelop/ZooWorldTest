@@ -2,8 +2,8 @@
 
 Status: agreed core; open decisions below. Priority: Essential.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
-Main GDD: [ZooWorld GDD](GDD.md). Implementation: data/models and validation exist;
-species assets, motion, pooling and contact resolution remain pending.
+Main GDD: [ZooWorld GDD](GDD.md). Implementation: data, Frog/Snake content, motion and pooling exist;
+food-chain contact resolution remains pending.
 
 ## Species and instance data
 
@@ -16,6 +16,10 @@ Current size belongs to an individual animal's runtime state. The authored range
 read-only species configuration. Sample size uniformly at spawn and use it as a dimensionless
 multiplier of the prefab's authored scale and collider. Size does not grow after eating.
 Actual species ranges remain tuning decisions. Sampling and no-growth rules were approved on 2026-11-02.
+
+Current authored tuning: Frog size multiplier 0.8-1.2; Snake 0.9-1.3. These are adjustable
+prototype values, not externally specified balance targets. Both definitions include a simple
+generated colored Sprite icon and a prefab variant referencing the common animal base.
 
 Names and icons are content metadata; an animal-selection menu or portrait HUD is not required.
 
@@ -51,7 +55,7 @@ Depends on [Simulation](Simulation.md) for contact, sizing and reuse and
 [Presentation](Presentation.md) for feedback/counters. No persistence is specified.
 
 Decisions owned by Andrii: Omnivore contact matrix and death-counter mapping, and authored
-species size ranges. The Frog/Snake path can proceed independently of Omnivore content.
+species size-range refinements. The Frog/Snake path proceeds independently of Omnivore content.
 Uniform size initialization, no growth after eating and lower-ID equal-size ties are approved.
 
 ## References and history

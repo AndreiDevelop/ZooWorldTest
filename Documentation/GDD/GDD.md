@@ -2,8 +2,8 @@
 
 Status: agreed core requirements; open decisions are explicitly marked.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
-Implementation: scene composition and animal data are in iteration 1;
-movement, spawning, pooling, food-chain resolution and HUD presentation remain pending.
+Implementation: scene composition, animal data, movement, spawning and pooling are implemented;
+food-chain resolution and HUD presentation remain pending.
 
 ## Concept and purpose
 
@@ -39,8 +39,8 @@ it is not a verified requirement for 1,000 simultaneous physics bodies.
 | Spawning, movement and reuse | Essential | Agreed core; tuning TBD | [Simulation](Simulation.md) |
 | Camera, graphics and uGUI | Essential | Assignment-defined; tuning TBD | [Presentation](Presentation.md) |
 
-These are design statuses. Scene composition and animal data have implementation;
-the autonomous simulation is not playable yet. See the iteration plan for validation status.
+These are design statuses. Both species spawn, move and collide in the simulation.
+Eating and visible HUD feedback are not implemented yet. See the iteration plan for validation status.
 
 ## Technical and delivery constraints
 
