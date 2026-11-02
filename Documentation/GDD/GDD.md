@@ -3,7 +3,8 @@
 Status: agreed core requirements; open decisions are explicitly marked.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
 Implementation: scene composition, animal data, movement, spawning, pooling and food-chain
-resolution, arena walls, death counters and pooled eating feedback are implemented.
+resolution, arena walls, death counters and pooled eating feedback are implemented and verified.
+See the [handoff requirement matrix](../Engineering/Reports/2026-11-02-handoff-validation.md).
 
 ## Concept and purpose
 

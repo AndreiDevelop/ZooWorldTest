@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Zenject;
 using ZooWorld.Animals;
+using ZooWorld.Animals.Movement;
 using ZooWorld.Domain.Session;
 using ZooWorld.Infrastructure;
 using ZooWorld.Simulation;
@@ -162,6 +163,48 @@ namespace ZooWorld.Tests.PlayMode
             _runtime.Update(20f);
             Assert.That(_runtime.SpawnedCount, Is.EqualTo(2));
             Assert.That(_pool.Active.Count, Is.Zero);
+        }
+
+        [Test]
+        public void NewSpeciesUsesExistingMovementAndPoolWithoutControllerChanges()
+        {
+            var temporarySpecies = Object.Instantiate(_settings.GetSpecies(1));
+            try
+            {
+                SetField(temporarySpecies, "_id", "handoff-test-species");
+                SetField(temporarySpecies, "_displayName", "Temporary Linear Predator");
+                SetField(temporarySpecies, "_sizeRange", new Vector2(0.7f, 0.7f));
+                SetField(_settings, "_animals", new[] { temporarySpecies });
+                _settings.Validate();
+                ReadySession();
+                _runtime.Update(1.01f);
+                Assert.That(_runtime.SpawnedCount, Is.EqualTo(1));
+                var first = _pool.Active[0];
+                Assert.That(first.Model.SpeciesId, Is.EqualTo("handoff-test-species"));
+                Assert.That(first.Model.CurrentSize, Is.EqualTo(0.7f));
+                Assert.That(first.View.Model, Is.SameAs(first.Controller.Model));
+                Assert.That(first.Controller.GetType(), Is.EqualTo(typeof(AnimalController)));
+                Assert.That(temporarySpecies.Movement.Create(first.View.Body, first.View.Visual),
+                    Is.TypeOf<LinearMovement>());
+                first.Controller.Tick(0.02f);
+                Assert.That(first.View.Body.linearVelocity.magnitude, Is.GreaterThan(0f));
+                var view = first.View;
+                var identity = first.Model.LifetimeId;
+                _pool.RequestRelease(first);
+                _pool.Tick(0f);
+                _runtime.Update(1.01f);
+                var second = _pool.Active[0];
+                Assert.That(second.View, Is.SameAs(view));
+                Assert.That(second.Model.LifetimeId, Is.GreaterThan(identity));
+                Assert.That(second.Model.SpeciesId, Is.EqualTo(temporarySpecies.Id));
+                Assert.That(_pool.CreatedCount, Is.EqualTo(1));
+                Assert.That(_pool.ReusedCount, Is.EqualTo(1));
+            }
+            finally
+            {
+                _runtime.Dispose();
+                Object.Destroy(temporarySpecies);
+            }
         }
 
         [TestCase(0.75f)]

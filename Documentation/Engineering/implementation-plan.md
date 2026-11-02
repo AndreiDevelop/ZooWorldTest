@@ -1,6 +1,6 @@
 # ZooWorld implementation plan
 
-Status: iterations 0-4 complete; iteration 5 pending. Owner: Andrii Maksymov. Updated: 2026-11-02.
+Status: iterations 0-5 complete and verified locally; publication remains a separate action. Owner: Andrii Maksymov. Updated: 2026-11-02.
 Scope: [GDD](../GDD/GDD.md) and the agreed
 [system architecture](CODE_STYLE_AND_ARCHITECTURE.md#zooworld-system-architecture).
 
@@ -18,11 +18,11 @@ failed acceptance checks consume the reserve and require replanning, rather than
 | 2. Pool, spawn and movement | 30 min | Verified locally | Reused frogs/snakes moving and returning to view |
 | 3. Food-chain resolution | 20 min | Verified locally | Size-based predator outcome, one death/event per lifetime |
 | 4. HUD and feedback | 15 min | Verified locally | Additive uGUI counters and pooled `Tasty!` |
-| 5. Verification and handoff | 20 min | Pending | Checked requirements, extension example and accurate documentation |
+| 5. Verification and handoff | 20 min | Verified locally | Checked requirements, extension example and accurate documentation |
 | Reserve | 15 min | Unallocated | Integration fixes and delivery |
 
 Iterations are sequential acceptance gates. Do not report an iteration complete because its
-time allocation expired. Iterations 1-4 were requested by the owner; iteration 5 requires its own start request.
+time allocation expired. Iterations 1-5 were requested by the owner. Verification does not authorize a player build or publication.
 
 ## Iteration 0 - verified baseline
 
@@ -96,6 +96,12 @@ Exit gate: counters start correctly and match actual deaths; each meal produces 
 feedback beneath the eater; reused views cannot inherit a previous lifetime's label.
 
 ## Iteration 5 - verification and handoff
+
+Result: 39 EditMode and 31 PlayMode cases passed. A temporary content-only third species
+used the production scheduler, controller, movement and pool without runtime code changes.
+Normal runtime reached 100 spawns and 79 pool reuses, with HUD totals matching the models.
+See the [requirement matrix, evidence and handoff limits](Reports/2026-11-02-handoff-validation.md).
+No player build, commit or push was performed by this iteration.
 
 - Run meaningful EditMode/PlayMode tests, inspect Console and capture the running simulation.
 - Confirm actual frame progression, cadence, both movements, return behavior, contacts and counters.

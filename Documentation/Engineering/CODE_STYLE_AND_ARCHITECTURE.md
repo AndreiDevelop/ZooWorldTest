@@ -39,7 +39,7 @@ These are mandatory user-established conventions, not claims that packages, scen
 
 ## ZooWorld system architecture
 
-Status: iterations 1-4 implemented and tested; final handoff verification pending. Owner: Andrii Maksymov.
+Status: iterations 1-5 implemented and verified locally; platform builds are outside this handoff. Owner: Andrii Maksymov.
 Updated: 2026-11-02. Gameplay authority: [GDD](../GDD/GDD.md).
 Execution order: [implementation plan](implementation-plan.md).
 
@@ -410,3 +410,11 @@ Follow [Art Direction Guidelines](../GDD/ART_DIRECTION_GUIDELINES.md) for icon-f
 - Verify compilation and relevant existing tests for code changes. Check Play Mode and visual captures when changed behavior needs them. Documentation edits do not require a build or Play Mode.
 - Create player/platform builds only when the user explicitly requests a build. Implementing a feature, an MVP, a fix, or asking for verification does not authorize a build. Do not build automatically for smoke tests, screenshots, performance checks, delivery-gate checks or release-candidate validation. Use compilation, EditMode/PlayMode tests, the running Editor and Editor captures for ordinary verification. Record any platform-specific checks that remain unverified until an explicitly requested build is available. Apply the same rule to local, development, release and CI-triggered builds; preserve the requested target/scope when a build is authorized.
 - Report actual checks and limitations. Keep large diagnostics in local reports. These rules do not imply that any gameplay system or test suite already exists.
+
+
+## Handoff verification
+
+The [final verification report](Reports/2026-11-02-handoff-validation.md) maps the assignment
+requirements to tests and observed runtime behavior. The extension test configures a temporary
+third species using the existing movement, factory/controller and prefab pool, without changing
+core runtime code or shipping demonstration content. It does not benchmark 1,000 active animals.

@@ -1,7 +1,7 @@
 # ZooWorld
 
 Unity developer test project. Frogs and snakes spawn every 1-2 seconds, move with distinct
-behaviors and interact through the food chain. Animal pooling, eating and session lifecycle
+behaviors and interact through the food chain. Animal pooling, eating, session lifecycle
 and the additive uGUI HUD are implemented. Death totals appear at the upper right; pooled
 `Tasty!` labels follow the eater.
 
@@ -35,6 +35,7 @@ The original assignment is preserved in `Zoo world_2026.pdf`.
 
 ## Documentation
 
+- [Final requirements verification and handoff](Documentation/Engineering/Reports/2026-11-02-handoff-validation.md)
 - [Game design document](Documentation/GDD/GDD.md)
 - [System architecture and current implementation](Documentation/Engineering/CODE_STYLE_AND_ARCHITECTURE.md#zooworld-system-architecture)
 - [Implementation iterations](Documentation/Engineering/implementation-plan.md)
@@ -65,6 +66,44 @@ Current tuning is in `Assets/SO/Simulation/ZooSimulation.asset`, `Assets/SO/Move
 `Assets/SO/Animals/`. Pools grow on demand with no active population cap and keep at most
 16 inactive views per prefab. Each acquire creates a fresh model/ID; returning a view is not a death.
 
-Verification: 39 EditMode and 30 PlayMode cases passed, including movement, physical food-chain
+Verification: 39 EditMode and 31 PlayMode cases passed, including movement, physical food-chain
 contacts, larger/equal predator outcomes, single death/event accounting, repeated pool reuse,
 stale callbacks, HUD counters/feedback/lifecycle, wall collisions, wall-free spawns, spawn readiness/cadence and scene cleanup. Omnivore contacts remain undefined and blocked.
+
+## Extend the species catalogue
+
+1. Create an `AnimalDefinitionSO` through **Assets > Create > ZooWorld > Animal Definition**
+   and save it under `Assets/SO/Animals/`. Give it a unique stable ID, display name, icon,
+   supported role and positive ordered size range.
+2. Reuse `FrogJump.asset` or `SnakeLinear.asset` from `Assets/SO/Movement/`. Use an existing
+   animal prefab for the same visuals, or create a variant of `Assets/Prefabs/Animals/Animal.prefab`.
+   Keep the prefab root inactive, with its root Rigidbody/SphereCollider and child VisualRoot.
+3. Add the definition to the Animals list of `Assets/SO/Simulation/ZooSimulation.asset`.
+   The scheduler samples the configured catalogue uniformly; no controller changes are needed.
+4. For a new locomotion type, derive a `MovementSO` that validates its settings and returns
+   an independent `IMovement` instance from `Create`. Keep mutable movement state in that instance.
+   Preserve grounded physics when adding visual motion.
+
+The handoff test creates a temporary third definition with a new ID and fixed size, uses the
+production scheduler, controller, linear movement and pool, then destroys the temporary SO.
+No demonstration species is shipped. A new food-chain role requires explicit interaction and
+statistics rules; authoring Omnivore is supported, but spawning it is blocked until those rules exist.
+
+## Verification and limits
+
+Use the Unity Test Runner for both EditMode and PlayMode assemblies. Before PlayMode tests,
+clear `EditorSceneManager.playModeStartScene` and open an empty scene; afterwards restore
+`Assets/Scenes/Intro.unity` as the play-mode start scene. Unity CLI async test runs use
+`test run --mode editor|playmode --filter ZooWorld.EditMode.Tests|ZooWorld.PlayMode.Tests
+--filter_type assembly --async_tests true`, followed by `test status`. Pass this project's
+`--project-path`, `--caller plugin --skill unity-cli` and a `--` fence before Editor parameters.
+
+The final report maps each assignment requirement to its evidence and records a normal run
+with 100 spawns, 79 animal-pool reuses, 90 meals and matching HUD totals. These are observations,
+not a performance benchmark. The architecture supports content-defined species; 1,000 concurrent
+animals, zero-GC operation and platform performance have not been measured.
+
+Prototype limits: no player input/reset menu, persistence or pathfinding; animals use physical
+recoil and random turns around walls. Crowded spawns may overlap other animals after bounded
+placement attempts, but remain outside walls. Omnivore rules and device safe-area/platform
+build validation are open. No player build or CI deployment is included in this handoff.
