@@ -107,3 +107,12 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# ZooWorld local tooling and preserved implementation drafts
+/LocalDrafts/
+/.idea/
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+*.stackdump
