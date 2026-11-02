@@ -1,5 +1,10 @@
 {
     "name": "ZooWorld.Runtime",
     "rootNamespace": "ZooWorld",
-    "references": ["ZooWorld.Domain", "Zenject"]
+    "references": [
+        "ZooWorld.Domain",
+        "Zenject",
+        "Unity.TextMeshPro",
+        "Unity.ugui"
+    ]
 }

@@ -1,6 +1,13 @@
 {
     "name": "ZooWorld.Editor",
     "rootNamespace": "ZooWorld.EditorTools",
-    "references": ["ZooWorld.Runtime", "ZooWorld.Domain"],
-    "includePlatforms": ["Editor"]
+    "references": [
+        "ZooWorld.Runtime",
+        "ZooWorld.Domain",
+        "Unity.TextMeshPro",
+        "Unity.ugui"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
 }

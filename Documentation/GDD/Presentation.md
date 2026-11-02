@@ -1,8 +1,8 @@
 # Presentation
 
-Status: assignment requirements agreed; presentation tuning TBD. Priority: Essential.
+Status: assignment requirements agreed; initial presentation tuning implemented. Priority: Essential.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
-Main GDD: [ZooWorld GDD](GDD.md). Implementation: primitive animals and arena walls implemented; HUD pending.
+Main GDD: [ZooWorld GDD](GDD.md). Implementation: primitive animals, arena walls and HUD implemented.
 
 ## Camera and visual language
 
@@ -26,11 +26,15 @@ No generated concept art is used. The supplied screenshot is a visual reference 
 - Initialize both totals to zero at the start of a new session and update them once per death.
 - Display `Tasty!` beneath a predator each time it eats another animal.
 - Render runtime UI in the separate, additively loaded HUD scene using uGUI.
-- Proposed implementation: TMP text on uGUI Canvases; pooled feedback labels track the eater.
+- TMP text on two uGUI overlay Canvases separates event-driven counters from moving pooled feedback.
 
-Feedback duration, offsets, typography and overlap behavior are SO-authored presentation
-tuning, currently TBD. When a tracked view dies or is recycled, stop feedback for its old
-lifetime. HUD unload releases subscriptions and labels. Displayed totals reflect the shared
+Current initial tuning lives in `Assets/SO/UI/HudPresentation.asset`: labels last 1 second,
+start 18 reference pixels beneath the animal's projected collision edge, rise 10 pixels and
+fade out. Multiple meals by one eater use 25-pixel vertical slots instead of replacing a label.
+Counter text is 22 reference pixels; feedback is 24. Both canvases scale from 1280x720.
+The pool grows lazily, retains up to 16 inactive labels and destroys inactive overflow.
+These are implementation defaults available for tuning, not values specified by the assignment. When a tracked view dies or is recycled, stop feedback for its old
+lifetime. HUD disable clears labels and detaches listeners; re-enable renders current counters without replaying old meals. HUD unload releases subscriptions and labels. Displayed totals reflect the shared
 authoritative session model; they are not independently counted by UI.
 
 No interactive controls, pause menu or animal catalogue are currently required. Exactly one
@@ -52,4 +56,5 @@ and readable contrast across tested aspect ratios; no specific mobile device mat
 - [Art direction guidelines](ART_DIRECTION_GUIDELINES.md): portable consistency rules;
   no inherited palette or animal art is implied.
 - Depends on [Animals](Animals.md) and [Simulation](Simulation.md).
+- [Iteration 4 validation and runtime capture](../Engineering/Reports/2026-11-02-iteration-four-validation.md).
 - Omnivore counter presentation awaits the contact/counter decision in Animals.

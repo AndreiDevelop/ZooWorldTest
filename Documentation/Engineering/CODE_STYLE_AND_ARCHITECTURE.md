@@ -39,7 +39,7 @@ These are mandatory user-established conventions, not claims that packages, scen
 
 ## ZooWorld system architecture
 
-Status: iterations 1-3 implemented and tested; visible HUD pending. Owner: Andrii Maksymov.
+Status: iterations 1-4 implemented and tested; final handoff verification pending. Owner: Andrii Maksymov.
 Updated: 2026-11-02. Gameplay authority: [GDD](../GDD/GDD.md).
 Execution order: [implementation plan](implementation-plan.md).
 
@@ -84,7 +84,19 @@ The historical baseline `4b213e8` is the empty Unity 6000.3.26f1 URP project des
 - Main explicitly owns a WorldObstacles map with 16 static wall colliders from 14 prefab instances.
   WallCorner nests reusable WallSegment prefabs. SimulationController excludes walls from random
   spawn attempts and bounded fallback placement; physical contacts use the existing animal motor.
-- Visible death-counter UI and eating labels remain pending iteration 4.
+- HudSceneInstaller binds the HUD root/configuration and HudController. Intro explicitly shares the
+  Main camera and animal pool with the HUD child scope after Main injection; no serialized cross-scene references.
+- DeathCountersView receives the shared statistics model and presentation SO through Zenject, renders
+  initial totals and subscribes symmetrically to Changed. HudController receives the same statistics model,
+  session, PredationService, Main pool and camera. It observes committed meals and owns a lazy label pool.
+- FeedbackLease captures both the model reference and AnimalView. Each meal gets an independent label/slot;
+  LateUpdate projects the current eater position onto the feedback Canvas and checks lifetime/expiry.
+  Eater death clears its labels immediately; retired/recycled views are rejected before the next UI render.
+- HUD disable detaches meal/session/statistics listeners and clears feedback. Re-enable renders current totals.
+  HUD scope release destroys active/inactive labels. Counter and feedback canvases are separate; no input
+  controls, GraphicRaycaster or EventSystem are needed for the noninteractive HUD.
+- TMP Essential Resources are vendor-required support assets in their standard package locations. Project-owned
+  HUD prefabs/settings use explicit references under Assets/Prefabs/UI and Assets/SO/UI, not Resources.
 
 Normal shutdown, cancellation during load and unexpected HUD unload are covered by PlayMode tests.
 An outstanding Unity scene load is allowed to finish and its scene is unloaded before cancellation completes.
@@ -147,7 +159,7 @@ Arrows show composition/data flow, not permission for domain services to referen
 2. Load Main and bind its explicit camera/world references and scene-local factory/pools.
 3. Load HUD additively and inject its dependencies from the shared session scope.
 4. Signal readiness after both roots validate injected models. The spawn schedule and gameplay
-   ticks run only after this gate. Initial counter rendering is added in iteration 4.
+   ticks run only after this gate. HUD renders initial counter totals before readiness.
 5. On shutdown, stop spawn/tick producers, invalidate the session, cancel loads/feedback, disable
    contacts and release active animals, then dispose scene-local subscriptions/pools and unload scenes.
 

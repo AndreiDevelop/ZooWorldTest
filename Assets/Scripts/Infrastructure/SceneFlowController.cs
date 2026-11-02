@@ -64,12 +64,14 @@ namespace ZooWorld.Infrastructure
                 _sessionContainer.BindInstance(main.WorldCamera);
                 MainSceneInstaller.Install(_mainScope.Container, main);
                 _mainScope.InjectHierarchy();
+                _sessionContainer.BindInstance(main.Runtime.Pool);
                 Session.MarkMainReady();
 
                 await LoadSceneAsync(_configuration.HudScenePath, cancellation);
                 _hudScene = SceneManager.GetSceneByPath(_configuration.HudScenePath);
                 _hudScope = new SceneScope(_hudScene, _sessionContainer);
-                _hudScope.FindRoot<HudSceneRoot>();
+                var hud = _hudScope.FindRoot<HudSceneRoot>();
+                HudSceneInstaller.Install(_hudScope.Container, hud);
                 _hudScope.InjectHierarchy();
                 cancellation.ThrowIfCancellationRequested();
                 SceneManager.SetActiveScene(_mainScene);

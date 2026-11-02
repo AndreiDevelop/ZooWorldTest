@@ -1,6 +1,6 @@
 # ZooWorld implementation plan
 
-Status: iterations 0-3 complete; iteration 4 pending. Owner: Andrii Maksymov. Updated: 2026-11-02.
+Status: iterations 0-4 complete; iteration 5 pending. Owner: Andrii Maksymov. Updated: 2026-11-02.
 Scope: [GDD](../GDD/GDD.md) and the agreed
 [system architecture](CODE_STYLE_AND_ARCHITECTURE.md#zooworld-system-architecture).
 
@@ -17,12 +17,12 @@ failed acceptance checks consume the reserve and require replanning, rather than
 | 1. Composition and animal data | 20 min | Verified locally | Scene readiness, injected state and validated species definitions |
 | 2. Pool, spawn and movement | 30 min | Verified locally | Reused frogs/snakes moving and returning to view |
 | 3. Food-chain resolution | 20 min | Verified locally | Size-based predator outcome, one death/event per lifetime |
-| 4. HUD and feedback | 15 min | Pending | Additive uGUI counters and pooled `Tasty!` |
+| 4. HUD and feedback | 15 min | Verified locally | Additive uGUI counters and pooled `Tasty!` |
 | 5. Verification and handoff | 20 min | Pending | Checked requirements, extension example and accurate documentation |
 | Reserve | 15 min | Unallocated | Integration fixes and delivery |
 
 Iterations are sequential acceptance gates. Do not report an iteration complete because its
-time allocation expired. Iterations 1-3 were requested by the owner; later iterations require their own start request.
+time allocation expired. Iterations 1-4 were requested by the owner; iteration 5 requires its own start request.
 
 ## Iteration 0 - verified baseline
 
@@ -84,6 +84,9 @@ predator outcomes, deferred recycling and stale callbacks were checked with real
 See [iteration 3 validation](Reports/2026-11-02-iteration-three-validation.md).
 
 ## Iteration 4 - HUD and feedback
+
+Verified: 39 EditMode and 30 PlayMode cases pass, including six new HUD lifecycle/feedback cases.
+See the [iteration 4 report](Reports/2026-11-02-iteration-four-validation.md).
 
 - Add uGUI/TMP dead-prey/dead-predator counters to the upper right of HUD.
 - Pool `Tasty!` labels; inject the camera and statistics instead of serializing cross-scene references.

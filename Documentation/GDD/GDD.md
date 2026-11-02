@@ -3,7 +3,7 @@
 Status: agreed core requirements; open decisions are explicitly marked.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
 Implementation: scene composition, animal data, movement, spawning, pooling and food-chain
-resolution are implemented; visible HUD presentation remains pending.
+resolution, arena walls, death counters and pooled eating feedback are implemented.
 
 ## Concept and purpose
 

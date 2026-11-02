@@ -1,5 +1,13 @@
 {
     "name": "ZooWorld.PlayMode.Tests",
-    "references": ["ZooWorld.Domain", "ZooWorld.Runtime", "Zenject"],
-    "optionalUnityReferences": ["TestAssemblies"]
+    "references": [
+        "ZooWorld.Domain",
+        "ZooWorld.Runtime",
+        "Zenject",
+        "Unity.TextMeshPro",
+        "Unity.ugui"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
 }
