@@ -33,6 +33,13 @@ namespace ZooWorld.Simulation
                 UnityEngine.Random.Range(_minimum.y + inset, _maximum.y - inset));
         }
 
+        public Vector3 PositionAt(float horizontal, float vertical, float inset)
+        {
+            Refresh();
+            return new Vector3(Mathf.Lerp(_minimum.x + inset, _maximum.x - inset, horizontal),
+                0f, Mathf.Lerp(_minimum.y + inset, _maximum.y - inset, vertical));
+        }
+
         public Vector3 GetReturnDirection(Vector3 position, Vector3 direction, float radius)
         {
             Refresh();

@@ -15,7 +15,10 @@ Do not silently add an active-population limit or spawn a large initial batch.
 
 The scheduler emits at most one animal per Update and schedules the next 1-2 second interval
 after that spawn; a long frame does not trigger a catch-up burst. Spawn placement tries eight
-positions with size-aware clearance, then allows physics to resolve overlap rather than dropping a spawn.
+positions with size-aware clearance. Walls always exclude a spawn position. If animal
+clearance fails, use a wall-free candidate and allow animal physics to separate the overlap.
+If all random candidates hit walls, scan a bounded grid for a wall-free fallback; a fully
+blocked layout reports a configuration error instead of placing an animal inside a wall.
 
 The camera's visible ground area determines return behavior. Leaving it changes the
 animal's movement direction back toward the screen, rather than teleporting it or killing it.
@@ -36,6 +39,13 @@ displacement. Movement preserves visible collision recoil rather than immediatel
 overwriting every impulse. A frog finishes its current jump before adopting a changed direction.
 Current tuning is jump interval 1.2 s, duration 0.45 s, distance 1.8 units, height 0.7 units;
 snake speed 2 units/s, turn interval 1.5-3.5 s and recoil recovery 4 units/s squared.
+
+## Arena walls
+
+The [reference wall layout](Presentation.md#camera-and-visual-language) is physical:
+static BoxColliders block both species, including jumping frogs whose bodies stay grounded.
+The existing bounce/recoil and random turns remain responsible for movement around obstacles;
+no pathfinding is introduced. Wall contacts do not count as food or deaths.
 
 ## Animal reuse
 

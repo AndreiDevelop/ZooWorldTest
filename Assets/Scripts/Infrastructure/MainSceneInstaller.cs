@@ -17,6 +17,7 @@ namespace ZooWorld.Infrastructure
         {
             _root.ValidateConfiguration();
             Container.BindInstance(_root.Settings);
+            Container.BindInstance(_root.Obstacles);
             Container.BindInstance(new WorldBounds(_root.WorldCamera));
             Container.Bind<AnimalLifetimeFactory>().AsSingle();
             Container.Bind<AnimalPool>().FromMethod(CreatePool).AsSingle();

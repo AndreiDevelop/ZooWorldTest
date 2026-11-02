@@ -61,7 +61,7 @@ namespace ZooWorld.Tests.PlayMode
             _session = container.Resolve<SessionModel>();
             var bounds = new WorldBounds(_camera);
             _pool = new AnimalPool(container.Resolve<AnimalLifetimeFactory>(), _root.transform, _settings, bounds);
-            _runtime = new SimulationController(_session, _pool, _settings, bounds);
+            _runtime = new SimulationController(_session, _pool, _settings, bounds, _main.Obstacles);
         }
 
         [UnityTearDown]

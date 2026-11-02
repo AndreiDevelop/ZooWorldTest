@@ -11,11 +11,13 @@ namespace ZooWorld.Infrastructure
         [SerializeField] private Camera _worldCamera;
         [SerializeField] private Transform _animalsRoot;
         [SerializeField] private SimulationSO _simulation;
+        [SerializeField] private WorldObstacles _obstacles;
 
         public Camera WorldCamera => _worldCamera;
         public bool CanSimulate => Session != null && Session.CanSimulate;
         public Transform AnimalsRoot => _animalsRoot;
         public SimulationSO Settings => _simulation;
+        public WorldObstacles Obstacles => _obstacles;
         public SimulationController Runtime { get; private set; }
 
         [Inject]
@@ -31,6 +33,12 @@ namespace ZooWorld.Infrastructure
                 throw new InvalidOperationException("Main requires explicit simulation settings and a scene-local animal root.");
             }
 
+            if (_obstacles == null || _obstacles.gameObject.scene != gameObject.scene)
+            {
+                throw new InvalidOperationException("Main requires an explicitly assigned scene-local obstacle map.");
+            }
+
+            _obstacles.Validate();
             _simulation.Validate();
         }
 

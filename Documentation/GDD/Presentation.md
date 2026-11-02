@@ -2,7 +2,7 @@
 
 Status: assignment requirements agreed; presentation tuning TBD. Priority: Essential.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
-Main GDD: [ZooWorld GDD](GDD.md). Implementation: pending.
+Main GDD: [ZooWorld GDD](GDD.md). Implementation: primitive animals and arena walls implemented; HUD pending.
 
 ## Camera and visual language
 
@@ -11,9 +11,14 @@ assignment specifies view direction but not projection type. Frogs and snakes mu
 distinguishable using simple geometry, shape or color. Production models, textures,
 animation rigs, audio and visual effects are not required.
 
-The assignment's screenshot illustrates camera orientation. Its obstacles and unrelated
-HUD elements are not additional ZooWorld requirements. No concept art has been approved
-or generated for this project.
+Owner decision, 2026-11-02: add the raised gray walls from the supplied
+[arena reference](References/arena-walls.png). Main contains two opposing L-shaped walls
+and disconnected straight segments around the arena, using reusable prefabs and static
+solid colliders. Preserve open passages; this is not a closed perimeter. The screenshot's
+other HUD elements are outside the requested scope. Wall geometry is authored in the
+level/prefabs; the existing top-down camera and animal visuals remain in use.
+
+No generated concept art is used. The supplied screenshot is a visual reference only.
 
 ## uGUI HUD and eating feedback
 

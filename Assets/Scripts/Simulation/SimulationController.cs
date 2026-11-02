@@ -10,15 +10,18 @@ namespace ZooWorld.Simulation
     {
         private readonly SimulationSO _settings;
         private readonly WorldBounds _bounds;
+        private readonly WorldObstacles _obstacles;
         private float _timeUntilSpawn;
         private bool _disposed;
 
-        public SimulationController(SessionModel session, AnimalPool pool, SimulationSO settings, WorldBounds bounds)
+        public SimulationController(SessionModel session, AnimalPool pool, SimulationSO settings, WorldBounds bounds,
+            WorldObstacles obstacles)
         {
             Session = session;
             Pool = pool;
             _settings = settings;
             _bounds = bounds;
+            _obstacles = obstacles;
             _timeUntilSpawn = NextInterval();
             Session.StateChanged += HandleStateChanged;
         }
@@ -41,14 +44,12 @@ namespace ZooWorld.Simulation
             }
 
             var definition = _settings.GetSpecies(UnityEngine.Random.Range(0, _settings.SpeciesCount));
-            var radius = definition.Prefab.Body.GetComponent<SphereCollider>().radius
-                * definition.SizeRange.y * Mathf.Max(definition.Prefab.transform.localScale.x,
-                    definition.Prefab.transform.localScale.z);
-            var position = _bounds.RandomPosition(radius + _settings.SpawnPadding);
-            for (var attempt = 1; attempt < _settings.SpawnAttempts && !Pool.HasClearance(position, radius); attempt++)
-            {
-                position = _bounds.RandomPosition(radius + _settings.SpawnPadding);
-            }
+            var sphere = definition.Prefab.Body.GetComponent<SphereCollider>();
+            var radius = sphere.radius * definition.SizeRange.y
+                * Mathf.Max(definition.Prefab.transform.localScale.x, definition.Prefab.transform.localScale.z);
+            var centerOffset = Vector3.Scale(sphere.center,
+                definition.Prefab.transform.localScale * definition.SizeRange.y);
+            var position = FindSpawnPosition(radius, centerOffset);
 
             Pool.Acquire(definition, position);
             SpawnedCount++;
@@ -61,6 +62,50 @@ namespace ZooWorld.Simulation
             {
                 Pool.Tick(deltaTime);
             }
+        }
+
+        private Vector3 FindSpawnPosition(float radius, Vector3 centerOffset)
+        {
+            var fallback = Vector3.zero;
+            var found = false;
+            var inset = radius + _settings.SpawnPadding;
+            for (var attempt = 0; attempt < _settings.SpawnAttempts; attempt++)
+            {
+                var candidate = _bounds.RandomPosition(inset);
+                if (!_obstacles.HasClearance(candidate + centerOffset, radius))
+                {
+                    continue;
+                }
+
+                fallback = candidate;
+                found = true;
+                if (Pool.HasClearance(candidate, radius))
+                {
+                    return candidate;
+                }
+            }
+
+            if (found)
+            {
+                return fallback;
+            }
+
+            // A bounded scan avoids dropping a spawn when random attempts all hit walls.
+            var divisions = _settings.SpawnAttempts;
+            for (var row = 0; row < divisions; row++)
+            {
+                for (var column = 0; column < divisions; column++)
+                {
+                    var candidate = _bounds.PositionAt((column + 0.5f) / divisions,
+                        (row + 0.5f) / divisions, inset);
+                    if (_obstacles.HasClearance(candidate + centerOffset, radius))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("Main has no wall-free spawn location for the selected animal.");
         }
 
         private float NextInterval()

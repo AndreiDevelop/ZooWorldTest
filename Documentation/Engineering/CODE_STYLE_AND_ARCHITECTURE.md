@@ -61,7 +61,7 @@ The historical baseline `4b213e8` is the empty Unity 6000.3.26f1 URP project des
   recording a death; controllers and stale callbacks cannot act on that model again.
 - `AnimalDefinitionSO` validates metadata/references/ranges; `MovementSO`/`IMovement` define the variation boundary.
   Frog/Snake assets and prefab variants, LinearMovement and JumpMovement are implemented.
-- `MainSceneInstaller` binds SimulationSO, WorldBounds, AnimalPool and SimulationController in the Main scope.
+- `MainSceneInstaller` binds SimulationSO, WorldBounds, WorldObstacles, AnimalPool and SimulationController in the Main scope.
   MainSceneController drives one Update/FixedUpdate loop after shared readiness. SimulationController
   owns the spawn schedule and stops/disposes its pool on session stop/failure.
 - AnimalPool uses prefab-keyed inactive stacks and active lifetime leases. It expands lazily and retains
@@ -81,6 +81,9 @@ The historical baseline `4b213e8` is the empty Unity 6000.3.26f1 URP project des
   verify that the eater's lifetime is still active before presenting delayed feedback.
 - The factory injects the entire animal hierarchy. The contact adapter clears cached lifetime references
   on disable and rejects explicit requests carrying an old self-model. Pool release stays deferred.
+- Main explicitly owns a WorldObstacles map with 16 static wall colliders from 14 prefab instances.
+  WallCorner nests reusable WallSegment prefabs. SimulationController excludes walls from random
+  spawn attempts and bounded fallback placement; physical contacts use the existing animal motor.
 - Visible death-counter UI and eating labels remain pending iteration 4.
 
 Normal shutdown, cancellation during load and unexpected HUD unload are covered by PlayMode tests.

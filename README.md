@@ -10,7 +10,7 @@ Use **Unity 6000.3.26f1 (Unity 6.3 LTS)** and open this repository root.
 The project uses the **Universal 3D / URP** template (`com.unity.template.urp-blank`).
 Open `Assets/Scenes/Intro.unity` and enter Play Mode. Intro loads Main and HUD additively;
 the session becomes Ready after both scene roots receive their shared models.
-Main has a top-down orthographic camera and primitive animals on a ground plane.
+Main has a top-down orthographic camera, primitive animals and gray straight/L-shaped walls.
 Frogs jump visually while their colliders remain grounded; snakes move continuously.
 
 ## Project status
@@ -20,6 +20,7 @@ Frogs jump visually while their colliders remain grounded; snakes move continuou
 - Intro owns the session scope; Main and HUD have separate child scopes and explicit readiness/cleanup.
 - Animal models, species validation and per-lifetime model injection are implemented.
 - Frog/Snake prefab variants, SO assets, independent movement motors and per-prefab pools are implemented.
+- Static wall prefabs block both species; spawning excludes wall volumes.
 - Prey pairs rebound through physics. Predators eat prey and smaller predators; equal predator
   sizes resolve by lower lifetime ID. Each death updates shared statistics once and emits one meal event.
 - The victim disappears immediately and returns to the pool on the next physics tick. Visible HUD is pending.
@@ -44,6 +45,7 @@ The original assignment is preserved in `Zoo world_2026.pdf`.
 - [Iteration 1 validation](Documentation/Engineering/Reports/2026-11-02-iteration-one-validation.md)
 - [Iteration 2 validation and capture](Documentation/Engineering/Reports/2026-11-02-iteration-two-validation.md)
 - [Iteration 3 validation](Documentation/Engineering/Reports/2026-11-02-iteration-three-validation.md)
+- [Arena wall validation and capture](Documentation/Engineering/Reports/2026-11-02-arena-walls-validation.md)
 
 Unity Pipeline is included for Editor automation through Unity CLI. Template packages remain
 at the versions resolved by the selected Editor. Unity Cloud is not linked.
@@ -60,6 +62,6 @@ Current tuning is in `Assets/SO/Simulation/ZooSimulation.asset`, `Assets/SO/Move
 `Assets/SO/Animals/`. Pools grow on demand with no active population cap and keep at most
 16 inactive views per prefab. Each acquire creates a fresh model/ID; returning a view is not a death.
 
-Verification: 39 EditMode and 21 PlayMode cases passed, including movement, physical food-chain
+Verification: 39 EditMode and 24 PlayMode cases passed, including movement, physical food-chain
 contacts, larger/equal predator outcomes, single death/event accounting, repeated pool reuse,
-stale callbacks, spawn readiness/cadence and scene cleanup. Omnivore contacts remain undefined and blocked.
+stale callbacks, wall collisions, wall-free spawns, spawn readiness/cadence and scene cleanup. Omnivore contacts remain undefined and blocked.
