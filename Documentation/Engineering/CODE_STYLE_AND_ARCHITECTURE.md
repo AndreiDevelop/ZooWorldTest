@@ -37,6 +37,158 @@ These are mandatory user-established conventions, not claims that packages, scen
 - Group by subsystem or role only when the group has at least two related content files, excluding .meta files. Keep lone files at the nearest meaningful parent. Apply the rule recursively; avoid empty symmetry folders, redundant single-child chains and needless depth.
 - Preserve SDK-required Resources and other necessary Unity-special folders and assembly/loading boundaries. Use AssetDatabase APIs for authorized moves and update affected tooling and documentation.
 
+## ZooWorld system architecture
+
+Status: iteration 1 composition/data implemented and tested; simulation systems pending. Owner: Andrii Maksymov.
+Updated: 2026-11-02. Gameplay authority: [GDD](../GDD/GDD.md).
+Execution order: [implementation plan](implementation-plan.md).
+
+### Implemented state and gaps
+
+The historical baseline `4b213e8` is the empty Unity 6000.3.26f1 URP project described in the
+[bootstrap report](Reports/2026-11-02-bootstrap-validation.md). Iteration 1 adds these actual components:
+
+- `ZooWorld.Domain` is an engine/DI-independent assembly for animal identity/state and session/statistics models.
+- `ZooWorld.Runtime` references Domain and Zenject. `ZooWorld.Editor` owns setup tooling;
+  separate EditMode and PlayMode test assemblies reference the runtime boundaries explicitly.
+- Minimal Extenject Source is installed at pinned revision `8495d61cebe4175b358370a3599b32ae976d6de6`.
+- Intro contains `SceneFlowController` and an explicit `SceneFlowSO` reference under `Assets/SO/Bootstrap/`.
+  Main contains its camera/light/volume and `MainSceneController`; HUD contains `HudSceneRoot`.
+- `SessionInstaller` binds one session, statistics model and identity sequence. `SceneScope`
+  creates Main/HUD child containers; the shared session becomes Ready only after both roots validate injection.
+- `AnimalLifetimeFactory` injects a fresh AnimalModel into AnimalController and an inactive AnimalView.
+  This is a lifetime-composition seam, not a pool or a spawner. AnimalView presents size/death state.
+- `AnimalDefinitionSO` validates metadata/references/ranges; `MovementSO`/`IMovement` define the variation boundary.
+  Concrete movement, animal content assets/prefabs, pooling, predation and visible HUD remain pending.
+
+Normal shutdown, cancellation during load and unexpected HUD unload are covered by PlayMode tests.
+An outstanding Unity scene load is allowed to finish and its scene is unloaded before cancellation completes.
+Unexpected removal of a required scene stops the session; seamless HUD hot reload is not implemented.
+
+Earlier source/test drafts are preserved locally in ignored `LocalDrafts/Gameplay/`, outside
+Unity's imported Assets and outside Git. They are not the current implementation. Their
+species definitions lack icons, Omnivore and size ranges; predation uses ID instead of size;
+pooling is absent. Review and adapt them before any reuse. Do not copy them into Assets wholesale.
+
+### Target responsibilities and dependency direction
+
+The table describes the full target, including later-iteration responsibilities. The implementation
+list above identifies what currently exists. Keep one authoritative owner per state and introduce
+interfaces only at real variation or dependency boundaries.
+
+| Component | Responsibility and lifetime |
+| --- | --- |
+| `AnimalDefinitionSO` | Read-only species ID, display name, Sprite icon, role, size range, movement and prefab references |
+| `MovementSO` / `IMovement` | Authored strategy configuration; creates independent per-lifetime linear/jump state |
+| `AnimalModel` | Plain C# lifetime ID, species identity, role, current size and one-shot alive/dead state |
+| `AnimalController` | Injected per-lifetime model, movement and services; coordinates motion and contact requests |
+| `AnimalView` | Renders the injected model; owns cached visual references and resets presentation on reuse |
+| Physics adapter | Bridges Rigidbody timing/contact callbacks to the controller; physics types stay outside domain state |
+| `PredationService` | Session service applying the agreed food-chain rules and committing a victim's death once |
+| `DeathStatisticsModel` | Shared session death totals and typed change events; no UI or scene-object references |
+| `AnimalFactory` / animal pools | Main-scene ownership of per-prefab views, lifetime creation, injection and reset/release |
+| Spawn controller / world bounds | Main-scene spawn scheduling, random direction and camera-derived return behavior |
+| HUD views / feedback presenter | HUD-scene rendering of shared statistics and pooled labels tied to a lifetime |
+| Installers / scene coordinator | Intro-owned composition, explicit readiness, shared/session scopes and shutdown |
+
+Unity adapters/controllers depend on domain models; domain models do not depend on Views,
+Unity scene objects or Zenject. Constructor-inject plain classes; use explicit injection methods
+for MonoBehaviours. Inject the same animal model into its Controller and View. Container access
+is confined to composition/factory infrastructure. Species behavior is composed, rather than
+implemented as one new controller subclass per species.
+
+```mermaid
+flowchart TD
+    Intro[Intro composition and session scope] --> Main[Main scene and animal factory]
+    Intro --> HUD[Additive HUD scene]
+    Definition[AnimalDefinitionSO and MovementSO] --> Main
+    Main --> Pool[Prefab pools]
+    Pool --> Controller[AnimalController and physics adapter]
+    Model[AnimalModel per lifetime] --> Controller
+    Model --> View[AnimalView]
+    Controller --> Predation[PredationService]
+    Predation --> Model
+    Predation --> Statistics[DeathStatisticsModel]
+    Statistics --> HUD
+    Predation --> Feedback[Eating event with lifetime identity]
+    Feedback --> HUD
+```
+
+Arrows show composition/data flow, not permission for domain services to reference scene objects.
+
+### Scene loading and lifetime ownership
+
+1. Intro validates configuration, installs the session model/services and begins a cancellable load sequence.
+2. Load Main and bind its explicit camera/world references and scene-local factory/pools.
+3. Load HUD additively and inject its dependencies from the shared session scope.
+4. Signal readiness after both roots validate injected models. Later iterations add initial counter
+   rendering and start the spawn schedule/gameplay ticks only after this readiness gate.
+5. On shutdown, stop spawn/tick producers, invalidate the session, cancel loads/feedback, disable
+   contacts and release active animals, then dispose scene-local subscriptions/pools and unload scenes.
+
+Intro retains the shared session scope while Main/HUD are loaded. There are no serialized
+cross-scene references. Required-scene unload stops the current session; a new session creates
+new totals. Exactly one EventSystem belongs to HUD if interaction
+is implemented. OnDisable before injection performs no dependency-dependent work.
+
+### Data, movement and contact flow
+
+All balance remains in SO assets: species data under `Assets/SO/Animals/`, movement under
+`Assets/SO/Movement/`, simulation settings under `Assets/SO/Simulation/`, presentation under
+`Assets/SO/UI/`. These are target locations, not folders to create before content exists.
+Use feature code under `Assets/Scripts/`, animal prefabs under `Assets/Prefabs/Animals/`, and
+UI prefabs under `Assets/Prefabs/UI/`. Preserve the shared grouping/prefab/Resources rules above.
+
+Uniformly sample initial size from the authored range, store it in AnimalModel and keep it fixed
+throughout the lifetime, including after eating. Apply scale consistently to visuals and the grounded collision body.
+The frog's visual child jumps; its physical body stays on the plane. Movement state is per lifetime,
+not mutable state in shared MovementSO assets. Physics ticks and visible recoil remain meaningful.
+
+The physics adapter submits a contact pair with current lifetime identities. PredationService
+rejects self, dead, duplicate and stale-lifetime requests, applies the food-chain matrix, and commits
+death before publishing statistics/presentation events. Predator/predator comparison uses current
+size, replacing the old ID-only proposal. Predator/prey behavior remains as specified by the GDD.
+Equal-size predator ties use the lower unique lifetime ID, as approved by the owner.
+Omnivore interactions/counter mapping remain open in [Animals](../GDD/Animals.md);
+AnimalDefinitionSO can author that role but rejects its entry into simulation.
+
+The death event disables victim participation immediately. Release occurs after current contact
+dispatch, so the same pooled view cannot reappear as a new animal inside old collision callbacks.
+The UI observes committed outcomes and never increments authoritative totals itself.
+
+### Pool lifecycle and callback safety
+
+Animal pooling is required by the owner, independently of the general profiling guidance below.
+Partition pools by prefab; prefab variants share a base composition but retain meaningful specialization.
+Proposed policy: lazy expansion, configured inactive retention and destruction of inactive overflow;
+do not add an active population cap or broad prewarming without a decision.
+
+An inactive view is acquired, assigned a fresh lifetime ID/model/controller/movement state and size,
+injected, positioned and reset before activation. On release, disable contact/ticking, unsubscribe
+and cancel owned work, clear references, reset Rigidbody velocities, scale and jump pose, and return
+the view once. Scene unload may destroy the pool; teardown releases do not count as food-chain deaths.
+
+Reuse the GameObject, not its domain identity. Track lifetime IDs in delayed callbacks and eating
+labels, because a still-valid Transform may already represent another animal. New spawns cannot
+inherit previous timers, collision commands, subscriptions or `Tasty!` labels. Validate this with
+repeated pool-cycle and stale-callback tests before declaring pooling complete.
+
+### Extensibility and verification boundaries
+
+Adding a species with an existing role/movement requires new authored content rather than changes
+to the central controller. A new locomotion behavior adds a MovementSO/IMovement implementation.
+A new food-chain role requires an explicit matrix and statistics/presentation decision. Icon/name
+metadata does not introduce an unrequested catalogue UI.
+
+Domain tests cover contact invariants; PlayMode tests cover physics movement, recoil, grounded
+colliders, pooled lifetime reset, stale callbacks and scene cleanup. Verify actual frame progression
+and UI in the Editor. A catalogue of 1,000 species does not establish a performance requirement
+or benchmark for 1,000 simultaneous bodies. The iteration plan records acceptance gates.
+
+Change history: 2026-11-02 - captured the current bootstrap and agreed composition, size-based
+predation, visual jump and pooling decisions. Iteration 1 subsequently implemented scene/session
+composition and data validation; uniform size/no growth/lower-ID ties were approved by the owner.
+
 ## Code style
 
 These requirements apply to new and meaningfully modified project-owned runtime code, Editor tools and tests. Preserve unrelated formatting and serialized references. Imported SDKs, packages and third-party assets are outside ordinary cleanup scope. Explicit readability requirements take precedence over compressed legacy examples.

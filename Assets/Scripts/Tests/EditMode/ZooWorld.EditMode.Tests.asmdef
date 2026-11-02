@@ -1,0 +1,6 @@
+{
+    "name": "ZooWorld.EditMode.Tests",
+    "references": ["ZooWorld.Domain", "ZooWorld.Runtime", "Zenject"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}

@@ -1,0 +1,6 @@
+{
+    "name": "ZooWorld.Editor",
+    "rootNamespace": "ZooWorld.EditorTools",
+    "references": ["ZooWorld.Runtime", "ZooWorld.Domain"],
+    "includePlatforms": ["Editor"]
+}

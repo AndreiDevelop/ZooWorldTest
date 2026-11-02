@@ -3,6 +3,9 @@
 Read and follow [Code Style and Architecture](Documentation/Engineering/CODE_STYLE_AND_ARCHITECTURE.md) before changing project-owned code.
 Read and follow [Documentation Guidelines](Documentation/DOCUMENTATION_GUIDELINES.md) when creating or updating documentation.
 Read and follow [GDD Best Practices](Documentation/GDD/GDD_BEST_PRACTICES.md) when creating or updating game design specifications.
+For gameplay changes, read the relevant feature linked from the [GDD](Documentation/GDD/GDD.md)
+and the [ZooWorld system architecture](Documentation/Engineering/CODE_STYLE_AND_ARCHITECTURE.md#zooworld-system-architecture).
+Keep agreed requirements, unresolved decisions and actual implementation status distinct.
 For generated GDD concepts, follow [concept-art storage and freshness](Documentation/GDD/GDD_BEST_PRACTICES.md#concept-art-storage-and-freshness): save images locally under the GDD tree, link them from the relevant design specification, and keep images, galleries and links current together.
 
 ## Shared architecture baseline
