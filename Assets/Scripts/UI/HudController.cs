@@ -4,14 +4,14 @@ using UnityEngine;
 using ZooWorld.Animals;
 using ZooWorld.Domain.Animals;
 using ZooWorld.Domain.Session;
-using ZooWorld.Infrastructure;
 using Object = UnityEngine.Object;
 
 namespace ZooWorld.UI
 {
     public sealed class HudController : IDisposable
     {
-        private readonly HudSceneRoot _root;
+        private readonly TastyLabelView _labelPrefab;
+        private readonly RectTransform _feedbackRoot;
         private readonly SessionModel _session;
         private readonly DeathStatisticsModel _statistics;
         private readonly PredationService _predation;
@@ -23,16 +23,17 @@ namespace ZooWorld.UI
         private bool _subscribed;
         private bool _disposed;
 
-        public HudController(HudSceneRoot root, SessionModel session, DeathStatisticsModel statistics,
-            PredationService predation, AnimalPool animals, Camera camera)
+        public HudController(HudPresentationSO settings, TastyLabelView labelPrefab, RectTransform feedbackRoot,
+            SessionModel session, DeathStatisticsModel statistics, PredationService predation, AnimalPool animals, Camera camera)
         {
-            _root = root;
+            _labelPrefab = labelPrefab;
+            _feedbackRoot = feedbackRoot;
             _session = session;
             _statistics = statistics;
             _predation = predation;
             _animals = animals;
             _camera = camera;
-            _settings = root.Settings;
+            _settings = settings;
         }
 
         public DeathStatisticsModel Statistics => _statistics;
@@ -112,7 +113,7 @@ namespace ZooWorld.UI
 
             if (label == null)
             {
-                label = Object.Instantiate(_root.LabelPrefab, _root.FeedbackRoot);
+                label = Object.Instantiate(_labelPrefab, _feedbackRoot);
                 CreatedLabelCount++;
             }
 
@@ -185,12 +186,12 @@ namespace ZooWorld.UI
         {
             var point = lease.Target.transform.position - _camera.transform.up * lease.Target.CollisionRadius;
             var screen = _camera.WorldToScreenPoint(point);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(_root.FeedbackRoot, screen, null, out var local);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_feedbackRoot, screen, null, out var local);
             var progress = lease.Age / _settings.FeedbackDuration;
             var offset = _settings.FeedbackOffset + Vector2.down * (lease.Slot * _settings.StackSpacing);
             local += offset + Vector2.up * (_settings.RiseDistance * progress);
             var halfSize = ((RectTransform)lease.Label.transform).rect.size * 0.5f;
-            var area = _root.FeedbackRoot.rect;
+            var area = _feedbackRoot.rect;
             local.x = Mathf.Clamp(local.x, area.xMin + halfSize.x, area.xMax - halfSize.x);
             local.y = Mathf.Clamp(local.y, area.yMin + halfSize.y, area.yMax - halfSize.y);
             lease.Label.Show(local, screen.z > 0f ? 1f - progress * progress : 0f);

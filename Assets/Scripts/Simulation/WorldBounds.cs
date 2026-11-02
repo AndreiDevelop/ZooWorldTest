@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ZooWorld.Simulation
 {
@@ -28,9 +29,9 @@ namespace ZooWorld.Simulation
             }
 
             return new Vector3(
-                UnityEngine.Random.Range(_minimum.x + inset, _maximum.x - inset),
+                Random.Range(_minimum.x + inset, _maximum.x - inset),
                 0f,
-                UnityEngine.Random.Range(_minimum.y + inset, _maximum.y - inset));
+                Random.Range(_minimum.y + inset, _maximum.y - inset));
         }
 
         public Vector3 PositionAt(float horizontal, float vertical, float inset)

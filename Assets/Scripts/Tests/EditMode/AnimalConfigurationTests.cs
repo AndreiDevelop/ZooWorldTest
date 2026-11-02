@@ -8,6 +8,8 @@ using ZooWorld.Animals.Content;
 using ZooWorld.Domain.Animals;
 using ZooWorld.Domain.Session;
 using ZooWorld.Infrastructure;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace ZooWorld.Tests.EditMode
 {
@@ -50,11 +52,11 @@ namespace ZooWorld.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            UnityEngine.Object.DestroyImmediate(_object);
-            UnityEngine.Object.DestroyImmediate(_definition);
-            UnityEngine.Object.DestroyImmediate(_movement);
-            UnityEngine.Object.DestroyImmediate(_icon);
-            UnityEngine.Object.DestroyImmediate(_texture);
+            Object.DestroyImmediate(_object);
+            Object.DestroyImmediate(_definition);
+            Object.DestroyImmediate(_movement);
+            Object.DestroyImmediate(_icon);
+            Object.DestroyImmediate(_texture);
         }
 
         [TestCase(0f, 1f)]
@@ -93,7 +95,7 @@ namespace ZooWorld.Tests.EditMode
         public void SamplingStaysInRangeAndDoesNotMutateSharedConfiguration()
         {
             var before = EditorJsonUtility.ToJson(_definition);
-            var randomState = UnityEngine.Random.state;
+            var randomState = Random.state;
             try
             {
                 for (var index = 0; index < 100; index++)
@@ -103,7 +105,7 @@ namespace ZooWorld.Tests.EditMode
             }
             finally
             {
-                UnityEngine.Random.state = randomState;
+                Random.state = randomState;
             }
 
             Assert.That(EditorJsonUtility.ToJson(_definition), Is.EqualTo(before));

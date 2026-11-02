@@ -165,6 +165,21 @@ namespace ZooWorld.Tests.PlayMode
             Assert.That(_pool.Active.Count, Is.Zero);
         }
 
+        [UnityTest]
+        public IEnumerator DestroyedAnimalDoesNotBlockSpawnBeforeTheNextPoolTick()
+        {
+            ReadySession();
+            var animal = _pool.Acquire(_settings.GetSpecies(0), Vector3.zero);
+            Object.Destroy(animal.View.gameObject);
+            yield return null;
+            Assert.That(animal.View == null, Is.True);
+            Assert.That(_pool.HasClearance(Vector3.zero, 1f), Is.True);
+            Assert.DoesNotThrow(() => _runtime.Update(2f));
+            _pool.Tick(0f);
+            Assert.That(_pool.Active.Count, Is.EqualTo(1));
+            Assert.That(_pool.Active[0].Model.IsActive, Is.True);
+        }
+
         [Test]
         public void NewSpeciesUsesExistingMovementAndPoolWithoutControllerChanges()
         {

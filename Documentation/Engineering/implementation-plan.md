@@ -19,7 +19,7 @@ failed acceptance checks consume the reserve and require replanning, rather than
 | 3. Food-chain resolution | 20 min | Verified locally | Size-based predator outcome, one death/event per lifetime |
 | 4. HUD and feedback | 15 min | Verified locally | Additive uGUI counters and pooled `Tasty!` |
 | 5. Verification and handoff | 20 min | Verified locally | Checked requirements, extension example and accurate documentation |
-| Reserve | 15 min | Unallocated | Integration fixes and delivery |
+| Reserve | 15 min | Review performed | Style/architecture audit, safe organization moves and lifecycle fix |
 
 Iterations are sequential acceptance gates. Do not report an iteration complete because its
 time allocation expired. Iterations 1-5 were requested by the owner. Verification does not authorize a player build or publication.
@@ -132,3 +132,11 @@ iterations. Pooling and the agreed architecture remain required even if the budg
 
 - 2026-11-02: recorded the bootstrap and decomposed the agreed simulation into testable iterations;
   distinguished approved behavior, proposals and pending implementation.
+
+
+## Reserve review
+
+The owner requested a code-style, architecture and organization pass after handoff verification.
+The review removes HUD-to-composition-root coupling, protects spawn clearance from destroyed
+views, groups environment materials/input/setup tools and preserves all moved asset GUIDs.
+See the [reserve review findings and checks](Reports/2026-11-02-reserve-review.md).

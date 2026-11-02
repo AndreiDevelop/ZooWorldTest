@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using ZooWorld.Animals;
 using ZooWorld.Animals.Content;
 using ZooWorld.Domain.Animals;
@@ -20,7 +21,7 @@ namespace ZooWorld.EditorTools
         [MenuItem("ZooWorld/Setup/Create Iteration 2 Content")]
         public static void CreateContent()
         {
-            if (EditorApplication.isPlaying || UnityEngine.SceneManagement.SceneManager.GetActiveScene().isDirty)
+            if (EditorApplication.isPlaying || SceneManager.GetActiveScene().isDirty)
             {
                 throw new InvalidOperationException("Save the current scene and leave Play Mode before setup.");
             }
@@ -32,7 +33,7 @@ namespace ZooWorld.EditorTools
 
             foreach (var folder in new[]
             {
-                "Assets/Materials", "Assets/Materials/Animals",
+                "Assets/Materials", "Assets/Materials/Animals", "Assets/Materials/World",
                 "Assets/Prefabs", "Assets/Prefabs/Animals", "Assets/SO/Animals", "Assets/SO/Movement",
                 "Assets/SO/Simulation", "Assets/Art", "Assets/Art/Animals"
             })
@@ -44,7 +45,7 @@ namespace ZooWorld.EditorTools
             var snakeMaterial = CreateMaterial("Assets/Materials/Animals/Snake.mat", new Color(0.95f, 0.55f, 0.19f));
             var eyeMaterial = CreateMaterial("Assets/Materials/Animals/Eye.mat", new Color(0.98f, 0.97f, 0.85f));
             var pupilMaterial = CreateMaterial("Assets/Materials/Animals/Pupil.mat", new Color(0.07f, 0.12f, 0.12f));
-            CreateMaterial("Assets/Materials/Ground.mat", new Color(0.24f, 0.38f, 0.32f));
+            CreateMaterial("Assets/Materials/World/Ground.mat", new Color(0.24f, 0.38f, 0.32f));
             var contact = new PhysicsMaterial("Animal Contact")
             {
                 dynamicFriction = 0f,
@@ -203,7 +204,7 @@ namespace ZooWorld.EditorTools
             ground.transform.position = Vector3.down * 0.025f;
             ground.transform.localScale = new Vector3(20f, 1f, 20f);
             ground.GetComponent<Renderer>().sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(
-                "Assets/Materials/Ground.mat");
+                "Assets/Materials/World/Ground.mat");
             Object.DestroyImmediate(ground.GetComponent<Collider>());
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);

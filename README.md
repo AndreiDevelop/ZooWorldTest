@@ -35,6 +35,7 @@ The original assignment is preserved in `Zoo world_2026.pdf`.
 
 ## Documentation
 
+- [Reserve code, architecture and organization review](Documentation/Engineering/Reports/2026-11-02-reserve-review.md)
 - [Final requirements verification and handoff](Documentation/Engineering/Reports/2026-11-02-handoff-validation.md)
 - [Game design document](Documentation/GDD/GDD.md)
 - [System architecture and current implementation](Documentation/Engineering/CODE_STYLE_AND_ARCHITECTURE.md#zooworld-system-architecture)
@@ -66,7 +67,7 @@ Current tuning is in `Assets/SO/Simulation/ZooSimulation.asset`, `Assets/SO/Move
 `Assets/SO/Animals/`. Pools grow on demand with no active population cap and keep at most
 16 inactive views per prefab. Each acquire creates a fresh model/ID; returning a view is not a death.
 
-Verification: 39 EditMode and 31 PlayMode cases passed, including movement, physical food-chain
+Verification: 39 EditMode and 32 PlayMode cases passed, including movement, physical food-chain
 contacts, larger/equal predator outcomes, single death/event accounting, repeated pool reuse,
 stale callbacks, HUD counters/feedback/lifecycle, wall collisions, wall-free spawns, spawn readiness/cadence and scene cleanup. Omnivore contacts remain undefined and blocked.
 
@@ -107,3 +108,24 @@ Prototype limits: no player input/reset menu, persistence or pathfinding; animal
 recoil and random turns around walls. Crowded spawns may overlap other animals after bounded
 placement attempts, but remain outside walls. Omnivore rules and device safe-area/platform
 build validation are open. No player build or CI deployment is included in this handoff.
+
+
+## Project organization
+
+| Location | Responsibility |
+| --- | --- |
+| `Assets/Scripts/Domain/` | Engine-independent animal/session models and food-chain decisions |
+| `Assets/Scripts/Animals/` | Animal view/controller/pool; movement strategies and species definitions |
+| `Assets/Scripts/Simulation/` | Spawn schedule, camera bounds, obstacle map and simulation configuration |
+| `Assets/Scripts/UI/` | Event-driven counters, feedback controller/pool and presentation settings |
+| `Assets/Scripts/Infrastructure/` | Zenject installers, lifetime factory and Intro/Main/HUD composition |
+| `Assets/Scripts/Editor/Setup/` | Explicit one-time content setup tools; do not rerun on existing content |
+| `Assets/Scripts/Tests/` | Separate EditMode and PlayMode test assemblies |
+| `Assets/Prefabs/Animals`, `World`, `UI` | Reusable variants, nested walls and HUD components |
+| `Assets/SO/` | Configuration assets grouped by type |
+| `Assets/Materials/Animals`, `World` | Animal and environment material groups |
+| `Assets/Settings/` | Render pipeline, physics and input assets |
+| `Documentation/` | GDD, engineering rules, plans and dated validation reports |
+
+The template SampleScene remains preserved; gameplay starts from Intro. The reserve review
+moves existing assets through AssetDatabase without changing GUIDs or deleting template/vendor content.

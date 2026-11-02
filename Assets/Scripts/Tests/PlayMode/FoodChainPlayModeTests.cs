@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using ZooWorld.Animals;
 using ZooWorld.Animals.Content;
-using ZooWorld.Domain.Session;
 using ZooWorld.Infrastructure;
 
 namespace ZooWorld.Tests.PlayMode

@@ -84,11 +84,12 @@ The historical baseline `4b213e8` is the empty Unity 6000.3.26f1 URP project des
 - Main explicitly owns a WorldObstacles map with 16 static wall colliders from 14 prefab instances.
   WallCorner nests reusable WallSegment prefabs. SimulationController excludes walls from random
   spawn attempts and bounded fallback placement; physical contacts use the existing animal motor.
-- HudSceneInstaller binds the HUD root/configuration and HudController. Intro explicitly shares the
+- HudSceneInstaller binds the HUD configuration, label prefab, feedback RectTransform and HudController. Intro explicitly shares the
   Main camera and animal pool with the HUD child scope after Main injection; no serialized cross-scene references.
 - DeathCountersView receives the shared statistics model and presentation SO through Zenject, renders
   initial totals and subscribes symmetrically to Changed. HudController receives the same statistics model,
-  session, PredationService, Main pool and camera. It observes committed meals and owns a lazy label pool.
+  session, PredationService, Main pool, camera and explicit presentation references. It observes committed meals
+  and owns a lazy label pool; it does not depend on the scene composition root.
 - FeedbackLease captures both the model reference and AnimalView. Each meal gets an independent label/slot;
   LateUpdate projects the current eater position onto the feedback Canvas and checks lifetime/expiry.
   Eater death clears its labels immediately; retired/recycled views are rejected before the next UI render.
@@ -418,3 +419,15 @@ The [final verification report](Reports/2026-11-02-handoff-validation.md) maps t
 requirements to tests and observed runtime behavior. The extension test configures a temporary
 third species using the existing movement, factory/controller and prefab pool, without changing
 core runtime code or shipping demonstration content. It does not benchmark 1,000 active animals.
+
+
+## Project organization review
+
+The reserve pass groups environment materials under `Assets/Materials/World/`, input configuration
+under `Assets/Settings/` and setup tools under `Assets/Scripts/Editor/Setup/`. Moves preserve asset
+GUIDs and assembly membership; source namespaces and serialized type identities are unchanged.
+Typed SO categories and the Domain/Editor/test assembly roots remain valid exceptions to the
+minimum-two-files grouping rule. No one-file feature directories or project Resources content
+were introduced. Vendor TMP assets remain in their required locations.
+
+See the [reserve code, architecture and organization report](Reports/2026-11-02-reserve-review.md).

@@ -5,6 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using ZooWorld.Infrastructure;
 using ZooWorld.Simulation;
+using Object = UnityEngine.Object;
 
 namespace ZooWorld.EditorTools
 {
@@ -45,10 +46,15 @@ namespace ZooWorld.EditorTools
                 AssetDatabase.CreateFolder("Assets/Prefabs", "World");
             }
 
+            if (!AssetDatabase.IsValidFolder("Assets/Materials/World"))
+            {
+                AssetDatabase.CreateFolder("Assets/Materials", "World");
+            }
+
             var material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             material.name = "Wall";
             material.color = new Color(0.58f, 0.60f, 0.58f);
-            AssetDatabase.CreateAsset(material, "Assets/Materials/Wall.mat");
+            AssetDatabase.CreateAsset(material, "Assets/Materials/World/Wall.mat");
             var segment = new GameObject("WallSegment");
             var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
             block.name = "Block";
@@ -59,13 +65,13 @@ namespace ZooWorld.EditorTools
             block.GetComponent<BoxCollider>().sharedMaterial =
                 AssetDatabase.LoadAssetAtPath<PhysicsMaterial>("Assets/Settings/AnimalContact.physicMaterial");
             var straight = PrefabUtility.SaveAsPrefabAsset(segment, Folder + "/WallSegment.prefab");
-            UnityEngine.Object.DestroyImmediate(segment);
+            Object.DestroyImmediate(segment);
 
             var corner = new GameObject("WallCorner");
             Place(straight, corner.transform, Vector3.zero, 0f, 1f);
             Place(straight, corner.transform, new Vector3(1.15f, 0f, -1.25f), 90f, 0.6f);
             var elbow = PrefabUtility.SaveAsPrefabAsset(corner, Folder + "/WallCorner.prefab");
-            UnityEngine.Object.DestroyImmediate(corner);
+            Object.DestroyImmediate(corner);
 
             var obstacles = new GameObject("Obstacles").AddComponent<WorldObstacles>();
             var parent = obstacles.transform;

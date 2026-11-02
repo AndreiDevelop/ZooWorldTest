@@ -15,8 +15,9 @@ namespace ZooWorld.Infrastructure
         public override void InstallBindings()
         {
             _root.ValidateConfiguration();
-            Container.BindInstance(_root);
             Container.BindInstance(_root.Settings);
+            Container.BindInstance(_root.LabelPrefab);
+            Container.BindInstance(_root.FeedbackRoot);
             Container.Bind<HudController>().AsSingle();
         }
     }

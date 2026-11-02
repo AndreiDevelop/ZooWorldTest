@@ -3,6 +3,7 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 using ZooWorld.Infrastructure;
 using ZooWorld.UI;
 using Object = UnityEngine.Object;
@@ -84,7 +85,7 @@ namespace ZooWorld.EditorTools
         private static GameObject CreateCounters(TMP_FontAsset font)
         {
             var rect = Rect("DeathCounters", null, Vector2.one, Vector2.one, new Vector2(264f, 116f));
-            var image = rect.gameObject.AddComponent<UnityEngine.UI.Image>();
+            var image = rect.gameObject.AddComponent<Image>();
             image.color = new Color(0.035f, 0.075f, 0.085f, 0.92f);
             image.raycastTarget = false;
             var heading = Text("Heading", rect, font, "DEATHS", 14f, new Color(0.65f, 0.76f, 0.72f));
@@ -114,7 +115,7 @@ namespace ZooWorld.EditorTools
             text.rectTransform.anchorMax = Vector2.one;
             text.rectTransform.offsetMin = Vector2.zero;
             text.rectTransform.offsetMax = Vector2.zero;
-            var shadow = text.gameObject.AddComponent<UnityEngine.UI.Shadow>();
+            var shadow = text.gameObject.AddComponent<Shadow>();
             shadow.effectColor = new Color(0.02f, 0.04f, 0.04f, 1f);
             shadow.effectDistance = new Vector2(1.5f, -1.5f);
             var group = rect.gameObject.AddComponent<CanvasGroup>();
@@ -138,8 +139,8 @@ namespace ZooWorld.EditorTools
             var canvas = rect.gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = sortingOrder;
-            var scaler = rect.gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();
-            scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            var scaler = rect.gameObject.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1280f, 720f);
             scaler.matchWidthOrHeight = 0.5f;
             return canvas;

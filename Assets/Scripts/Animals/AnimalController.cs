@@ -4,6 +4,7 @@ using ZooWorld.Domain.Animals;
 using ZooWorld.Domain.Session;
 using ZooWorld.Simulation;
 using ZooWorld.Simulation.Content;
+using Random = UnityEngine.Random;
 
 namespace ZooWorld.Animals
 {
@@ -62,9 +63,9 @@ namespace ZooWorld.Animals
 
         private void ChooseDirection()
         {
-            var angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+            var angle = Random.Range(0f, Mathf.PI * 2f);
             _direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-            _timeUntilTurn = UnityEngine.Random.Range(_settings.MinTurnInterval, _settings.MaxTurnInterval);
+            _timeUntilTurn = Random.Range(_settings.MinTurnInterval, _settings.MaxTurnInterval);
         }
     }
 }

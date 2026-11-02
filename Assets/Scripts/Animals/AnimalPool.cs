@@ -143,7 +143,7 @@ namespace ZooWorld.Animals
         {
             foreach (var lease in _active)
             {
-                if (lease.PendingRelease)
+                if (lease.PendingRelease || lease.View == null || !lease.Model.IsAlive || !lease.Model.IsActive)
                 {
                     continue;
                 }

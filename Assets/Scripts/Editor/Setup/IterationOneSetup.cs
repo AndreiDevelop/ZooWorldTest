@@ -4,6 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using ZooWorld.Infrastructure;
+using Object = UnityEngine.Object;
 
 namespace ZooWorld.EditorTools
 {
@@ -97,7 +98,7 @@ namespace ZooWorld.EditorTools
             }
         }
 
-        private static void SetReference(UnityEngine.Object target, string field, UnityEngine.Object value)
+        private static void SetReference(Object target, string field, Object value)
         {
             if (value == null)
             {

@@ -3,6 +3,7 @@ using UnityEngine;
 using ZooWorld.Animals;
 using ZooWorld.Domain.Session;
 using ZooWorld.Simulation.Content;
+using Random = UnityEngine.Random;
 
 namespace ZooWorld.Simulation
 {
@@ -43,7 +44,7 @@ namespace ZooWorld.Simulation
                 return;
             }
 
-            var definition = _settings.GetSpecies(UnityEngine.Random.Range(0, _settings.SpeciesCount));
+            var definition = _settings.GetSpecies(Random.Range(0, _settings.SpeciesCount));
             var sphere = definition.Prefab.Body.GetComponent<SphereCollider>();
             var radius = sphere.radius * definition.SizeRange.y
                 * Mathf.Max(definition.Prefab.transform.localScale.x, definition.Prefab.transform.localScale.z);
@@ -110,7 +111,7 @@ namespace ZooWorld.Simulation
 
         private float NextInterval()
         {
-            return UnityEngine.Random.Range(_settings.MinSpawnInterval, _settings.MaxSpawnInterval);
+            return Random.Range(_settings.MinSpawnInterval, _settings.MaxSpawnInterval);
         }
 
         private void HandleStateChanged(SessionState state)
