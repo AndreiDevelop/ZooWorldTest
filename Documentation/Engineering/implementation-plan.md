@@ -1,6 +1,6 @@
 # ZooWorld implementation plan
 
-Status: iterations 0-2 complete; iteration 3 pending. Owner: Andrii Maksymov. Updated: 2026-11-02.
+Status: iterations 0-3 complete; iteration 4 pending. Owner: Andrii Maksymov. Updated: 2026-11-02.
 Scope: [GDD](../GDD/GDD.md) and the agreed
 [system architecture](CODE_STYLE_AND_ARCHITECTURE.md#zooworld-system-architecture).
 
@@ -16,13 +16,13 @@ failed acceptance checks consume the reserve and require replanning, rather than
 | 0. Empty project | Already completed | Verified | Unity 6.3 URP baseline published at `4b213e8` |
 | 1. Composition and animal data | 20 min | Verified locally | Scene readiness, injected state and validated species definitions |
 | 2. Pool, spawn and movement | 30 min | Verified locally | Reused frogs/snakes moving and returning to view |
-| 3. Food-chain resolution | 20 min | Pending | Size-based predator outcome, one death/event per lifetime |
+| 3. Food-chain resolution | 20 min | Verified locally | Size-based predator outcome, one death/event per lifetime |
 | 4. HUD and feedback | 15 min | Pending | Additive uGUI counters and pooled `Tasty!` |
 | 5. Verification and handoff | 20 min | Pending | Checked requirements, extension example and accurate documentation |
 | Reserve | 15 min | Unallocated | Integration fixes and delivery |
 
 Iterations are sequential acceptance gates. Do not report an iteration complete because its
-time allocation expired. Iterations 1-2 were requested by the owner; later iterations require their own start request.
+time allocation expired. Iterations 1-3 were requested by the owner; later iterations require their own start request.
 
 ## Iteration 0 - verified baseline
 
@@ -76,6 +76,12 @@ Console errors or warnings during the capture. See [iteration 2 validation](Repo
 Exit gate: EditMode tests cover prey/prey, predator/prey in either order, larger-predator
 survival, agreed equal-size outcome, duplicate callbacks and multi-animal contact chains.
 Play Mode confirms separation and one release/death per victim. Omnivore behavior requires an agreed matrix.
+
+Result: 39 EditMode and 21 PlayMode cases passed. The domain commits death and statistics
+before publishing events; the base-prefab contact adapter validates the current lifetime and
+routes actual PhysX contacts through the injected controller. Prey separation, larger/equal
+predator outcomes, deferred recycling and stale callbacks were checked with real bodies.
+See [iteration 3 validation](Reports/2026-11-02-iteration-three-validation.md).
 
 ## Iteration 4 - HUD and feedback
 

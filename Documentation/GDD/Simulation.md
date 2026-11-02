@@ -2,8 +2,8 @@
 
 Status: agreed core; numeric tuning TBD. Priority: Essential.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
-Main GDD: [ZooWorld GDD](GDD.md). Implementation: verified in iteration 2;
-automatic food-chain deaths remain iteration 3 work.
+Main GDD: [ZooWorld GDD](GDD.md). Implementation: movement/pooling verified in iteration 2;
+automatic food-chain contacts and death statistics verified in iteration 3.
 
 ## Spawning and direction
 

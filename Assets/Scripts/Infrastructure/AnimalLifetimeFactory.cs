@@ -35,7 +35,7 @@ namespace ZooWorld.Infrastructure
             lifetime.BindInstance(model);
             lifetime.Bind<AnimalController>().AsSingle();
             var controller = lifetime.Resolve<AnimalController>();
-            lifetime.Inject(inactiveView);
+            lifetime.InjectGameObject(inactiveView.gameObject);
             return controller;
         }
     }

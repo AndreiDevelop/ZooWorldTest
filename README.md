@@ -1,8 +1,8 @@
 # ZooWorld
 
 Unity developer test project. Frogs and snakes spawn every 1-2 seconds, move with distinct
-behaviors and collide physically. Animal pooling and session lifecycle are implemented.
-Food-chain eating and the visible HUD are pending iterations 3-4.
+behaviors and interact through the food chain. Animal pooling, eating and session lifecycle
+are implemented. Visible death counters and `Tasty!` labels are pending iteration 4.
 
 ## Open
 
@@ -20,7 +20,9 @@ Frogs jump visually while their colliders remain grounded; snakes move continuou
 - Intro owns the session scope; Main and HUD have separate child scopes and explicit readiness/cleanup.
 - Animal models, species validation and per-lifetime model injection are implemented.
 - Frog/Snake prefab variants, SO assets, independent movement motors and per-prefab pools are implemented.
-- Predation and visual HUD remain pending. At this stage all contacts are resolved by physics.
+- Prey pairs rebound through physics. Predators eat prey and smaller predators; equal predator
+  sizes resolve by lower lifetime ID. Each death updates shared statistics once and emits one meal event.
+- The victim disappears immediately and returns to the pool on the next physics tick. Visible HUD is pending.
 - Authored gameplay configuration must use typed ScriptableObject folders under `Assets/SO/`.
 - Repeated runtime objects must use prefabs, with variants and nested prefabs where appropriate.
 - CrazyGames integration, monetization and CI are outside this setup.
@@ -41,6 +43,7 @@ The original assignment is preserved in `Zoo world_2026.pdf`.
 - [Bootstrap validation](Documentation/Engineering/Reports/2026-11-02-bootstrap-validation.md)
 - [Iteration 1 validation](Documentation/Engineering/Reports/2026-11-02-iteration-one-validation.md)
 - [Iteration 2 validation and capture](Documentation/Engineering/Reports/2026-11-02-iteration-two-validation.md)
+- [Iteration 3 validation](Documentation/Engineering/Reports/2026-11-02-iteration-three-validation.md)
 
 Unity Pipeline is included for Editor automation through Unity CLI. Template packages remain
 at the versions resolved by the selected Editor. Unity Cloud is not linked.
@@ -57,5 +60,6 @@ Current tuning is in `Assets/SO/Simulation/ZooSimulation.asset`, `Assets/SO/Move
 `Assets/SO/Animals/`. Pools grow on demand with no active population cap and keep at most
 16 inactive views per prefab. Each acquire creates a fresh model/ID; returning a view is not a death.
 
-Verification: 20 EditMode and 16 PlayMode cases passed, including movement distance/speed,
-physical rebound, repeated pool reuse, stale callback rejection, spawn readiness/cadence and scene cleanup.
+Verification: 39 EditMode and 21 PlayMode cases passed, including movement, physical food-chain
+contacts, larger/equal predator outcomes, single death/event accounting, repeated pool reuse,
+stale callbacks, spawn readiness/cadence and scene cleanup. Omnivore contacts remain undefined and blocked.

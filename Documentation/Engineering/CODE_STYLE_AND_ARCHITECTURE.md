@@ -39,7 +39,7 @@ These are mandatory user-established conventions, not claims that packages, scen
 
 ## ZooWorld system architecture
 
-Status: iterations 1-2 implemented and tested; predation and visible HUD pending. Owner: Andrii Maksymov.
+Status: iterations 1-3 implemented and tested; visible HUD pending. Owner: Andrii Maksymov.
 Updated: 2026-11-02. Gameplay authority: [GDD](../GDD/GDD.md).
 Execution order: [implementation plan](implementation-plan.md).
 
@@ -70,7 +70,18 @@ The historical baseline `4b213e8` is the empty Unity 6000.3.26f1 URP project des
 - Linear/jump motors preserve physical recoil and recover toward commanded motion. Grounded Rigidbody
   bodies use sphere colliders; the visual child follows a world-height jump arc. WorldBounds refreshes
   from the camera projection/transform and accounts for collision radius when returning animals.
-- PredationService, death-counter UI and eating feedback remain pending iterations 3-4.
+- SessionInstaller now binds the domain-only PredationService beside shared death statistics.
+  AnimalContactAdapter is inherited from the animal base prefab; it receives the current model/controller
+  through lifetime injection and routes OnCollisionEnter through AnimalController.
+- PredationService selects by role, then predator current size, then lower lifetime ID on exact ties.
+  It rejects null/self/duplicate/dead/retired/recorded-identity pairs and undefined Omnivore contacts.
+- Domain death and statistics mutation complete before observer callbacks. Publication order is
+  AnimalModel.Died (immediate contact/visual suspension), statistics Changed, then EatingCommitted.
+  The EatingEvent carries stable lifetime identities and model references; later UI consumers must
+  verify that the eater's lifetime is still active before presenting delayed feedback.
+- The factory injects the entire animal hierarchy. The contact adapter clears cached lifetime references
+  on disable and rejects explicit requests carrying an old self-model. Pool release stays deferred.
+- Visible death-counter UI and eating labels remain pending iteration 4.
 
 Normal shutdown, cancellation during load and unexpected HUD unload are covered by PlayMode tests.
 An outstanding Unity scene load is allowed to finish and its scene is unloaded before cancellation completes.
@@ -202,6 +213,8 @@ predation, visual jump and pooling decisions. Iteration 1 subsequently implement
 composition and data validation; uniform size/no growth/lower-ID ties were approved by the owner.
 Iteration 2 implemented prefab pools, spawning, independent movement motors and camera return;
 36 EditMode/PlayMode cases passed. See the [iteration 2 report](Reports/2026-11-02-iteration-two-validation.md).
+Iteration 3 implemented domain predation, an inherited physics adapter, atomic death/statistics
+commit and typed meal events; 60 cases passed. See the [iteration 3 report](Reports/2026-11-02-iteration-three-validation.md).
 
 ## Code style
 

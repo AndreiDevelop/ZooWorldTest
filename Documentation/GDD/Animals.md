@@ -2,8 +2,8 @@
 
 Status: agreed core; open decisions below. Priority: Essential.
 Owner: Andrii Maksymov. Updated: 2026-11-02.
-Main GDD: [ZooWorld GDD](GDD.md). Implementation: data, Frog/Snake content, motion and pooling exist;
-food-chain contact resolution remains pending.
+Main GDD: [ZooWorld GDD](GDD.md). Implementation: data, content, motion, pooling and food-chain
+resolution are implemented; visible counters and eating labels remain iteration 4 work.
 
 ## Species and instance data
 
@@ -36,6 +36,15 @@ Names and icons are content metadata; an animal-selection menu or portrait HUD i
 Size comparison is symmetric in callback order. A dead animal cannot eat or die again.
 The victim disappears; the surviving eater receives `Tasty!` feedback. Each death increments
 exactly one counter. Returning an animal to a pool during shutdown is not a death.
+
+The current resolver commits both death state and its counter before publishing notifications.
+It emits one typed eating event containing eater/victim lifetime identities. The victim's
+contacts and visuals disable immediately; recycling waits until the next physics tick.
+`Tasty!` consumes that event in iteration 4 and is not yet rendered.
+
+Reverse callbacks for one pair give the same survivor and cannot repeat the death. Distinct
+multi-animal contacts resolve sequentially in Unity's callback order; a previously killed actor
+cannot eat in a later callback. No global arbitration of simultaneous contact graphs is specified.
 
 No player input, rewards, saved state or manual attack commands are required.
 

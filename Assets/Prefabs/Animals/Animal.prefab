@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5826960456409287151}
   - component: {fileID: 3543420846243940562}
   - component: {fileID: 7086904895382231713}
+  - component: {fileID: 7123660229209069013}
   m_Layer: 0
   m_Name: Animal
   m_TagString: Untagged
@@ -97,6 +98,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: ZooWorld.Runtime::ZooWorld.Animals.AnimalView
   _visual: {fileID: 4931705253205052657}
   _body: {fileID: 5826960456409287151}
+--- !u!114 &7123660229209069013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1249551449015021900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9122468a70734453b80555976eaa93f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ZooWorld.Runtime::ZooWorld.Animals.AnimalContactAdapter
+  _view: {fileID: 7086904895382231713}
 --- !u!1 &1825099386631571160
 GameObject:
   m_ObjectHideFlags: 0

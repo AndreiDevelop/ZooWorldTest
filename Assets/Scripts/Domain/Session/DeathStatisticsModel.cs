@@ -15,6 +15,22 @@ namespace ZooWorld.Domain.Session
 
         public bool RecordDeath(AnimalModel animal)
         {
+            if (!CommitDeath(animal))
+            {
+                return false;
+            }
+
+            PublishChange();
+            return true;
+        }
+
+        internal bool HasRecordedDeath(long lifetimeId)
+        {
+            return _recordedLifetimes.Contains(lifetimeId);
+        }
+
+        internal bool CommitDeath(AnimalModel animal)
+        {
             if (animal == null)
             {
                 throw new ArgumentNullException(nameof(animal));
@@ -39,8 +55,12 @@ namespace ZooWorld.Domain.Session
                 DeadPredators++;
             }
 
-            Changed?.Invoke();
             return true;
+        }
+
+        internal void PublishChange()
+        {
+            Changed?.Invoke();
         }
     }
 }

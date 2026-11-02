@@ -1,15 +1,16 @@
 using System;
 using UnityEngine;
-using ZooWorld.Simulation;
-using ZooWorld.Simulation.Content;
 using ZooWorld.Domain.Animals;
 using ZooWorld.Domain.Session;
+using ZooWorld.Simulation;
+using ZooWorld.Simulation.Content;
 
 namespace ZooWorld.Animals
 {
     public sealed class AnimalController
     {
         private readonly SessionModel _session;
+        private readonly PredationService _predation;
         private IMovement _movement;
         private AnimalView _view;
         private WorldBounds _bounds;
@@ -17,14 +18,20 @@ namespace ZooWorld.Animals
         private Vector3 _direction;
         private float _timeUntilTurn;
 
-        public AnimalController(AnimalModel model, SessionModel session)
+        public AnimalController(AnimalModel model, SessionModel session, PredationService predation)
         {
             Model = model ?? throw new ArgumentNullException(nameof(model));
             _session = session ?? throw new ArgumentNullException(nameof(session));
+            _predation = predation ?? throw new ArgumentNullException(nameof(predation));
         }
 
         public AnimalModel Model { get; }
         public bool CanSimulate => _session.CanSimulate && Model.IsAlive && Model.IsActive;
+
+        public bool TryResolveContact(AnimalModel other)
+        {
+            return CanSimulate && _predation.TryResolve(Model, other, out _);
+        }
 
         public void ConfigureMovement(IMovement movement, AnimalView view, WorldBounds bounds, SimulationSO settings)
         {

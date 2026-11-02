@@ -10,6 +10,7 @@ namespace ZooWorld.Infrastructure
         {
             Container.Bind<SessionModel>().AsSingle();
             Container.Bind<DeathStatisticsModel>().AsSingle();
+            Container.Bind<PredationService>().AsSingle();
             Container.Bind<AnimalIdentitySequence>().AsSingle();
         }
     }

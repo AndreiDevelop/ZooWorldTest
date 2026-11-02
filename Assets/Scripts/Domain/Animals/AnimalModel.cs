@@ -48,14 +48,29 @@ namespace ZooWorld.Domain.Animals
 
         public bool TryDie()
         {
+            if (!TryCommitDeath())
+            {
+                return false;
+            }
+
+            PublishDeath();
+            return true;
+        }
+
+        internal bool TryCommitDeath()
+        {
             if (!IsAlive || !IsActive)
             {
                 return false;
             }
 
             IsAlive = false;
-            Died?.Invoke();
             return true;
+        }
+
+        internal void PublishDeath()
+        {
+            Died?.Invoke();
         }
     }
 }
